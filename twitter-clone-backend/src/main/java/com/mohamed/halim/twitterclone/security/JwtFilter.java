@@ -1,6 +1,8 @@
 package com.mohamed.halim.twitterclone.security;
 
 import java.io.IOException;
+
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
+@Configuration
 public class JwtFilter extends OncePerRequestFilter {
     private JwtService jwtService;
     private final UserDetailsService userDetailsService;

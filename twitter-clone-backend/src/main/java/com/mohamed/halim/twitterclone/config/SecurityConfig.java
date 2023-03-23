@@ -26,7 +26,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class SecurityConfig {
     private JwtFilter jwtFilter;
-    private ProfileRepository repository;
+    private UserDetailsService userDetailsService;
 
     @Bean
     public SecurityFilterChain config(HttpSecurity http) throws Exception {
@@ -44,16 +44,11 @@ public class SecurityConfig {
                 .build();
     }
 
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return username -> repository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-    }
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService());
+        authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
