@@ -26,13 +26,19 @@ const apiMiddleware: Middleware =
     }
     const payload = action.payload as ApiCallParams;
     next(action);
-    const token = Cookies.get("access_token");
+    if (payload.useJwtToken) {
+      const token = Cookies.get("access_token");
+      payload.headers = {
+        ...payload.headers,
+        Authorization: "Bearer " + token,
+      };
+    }
     axios
       .request({
         url: payload.url,
         method: payload.method ? payload.method : "GET",
         data: payload.body,
-        headers: { ...payload.headers, Authorization: "Bearer " + token },
+        headers: payload.headers,
       })
       .then((response: AxiosResponse<any, any>) => {
         if (payload.onSuccess != null) {
