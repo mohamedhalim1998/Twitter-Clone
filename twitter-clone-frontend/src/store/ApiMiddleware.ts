@@ -2,6 +2,7 @@ import { createAction } from "@reduxjs/toolkit";
 import axios, { AxiosError, AxiosResponse, Method } from "axios";
 import Cookies from "js-cookie";
 import _ from "lodash";
+import { toast } from "react-toastify";
 import { AnyAction, Middleware } from "redux";
 
 export interface ApiCallParams {
@@ -64,6 +65,17 @@ const apiMiddleware: Middleware =
               data: response.data,
               status: response.status,
             },
+          });
+        } else {
+          toast.error("" + response.data, {
+            position: "top-center",
+            autoClose: 2000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
           });
         }
       });
