@@ -8,4 +8,5 @@ import com.mohamed.halim.twitterclone.model.Profile;
 
 public interface ProfileRepository extends JpaRepository<Profile, String> {
     Optional<Profile> findByUsername(String username);
+    Optional<Profile> findByEmail(String username);
 }

@@ -19,9 +19,14 @@ public class ProfileService {
     private JwtService jwtService;
 
     public AuthResponse registerUser(UserDto dto) {
+        if(profileRepository.findByEmail(dto.getEmail()).isPresent()) {
+            throw new RuntimeException("Email used before");
+        }
+        if(profileRepository.findByUsername(dto.getUsername()).isPresent()) {
+            throw new RuntimeException("username used before");
+        }
         dto.setPassword(passwordEncoder.encode(dto.getPassword()));
         Profile saved = profileRepository.save(dto.toProfile());
-
         return AuthResponse.builder()
                 .username(dto.getUsername())
                 .email(dto.getEmail())
