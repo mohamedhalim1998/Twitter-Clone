@@ -1,5 +1,6 @@
 package com.mohamed.halim.twitterclone.model;
 
+import java.util.Date;
 import java.util.Collection;
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class Profile implements UserDetails {
     private String username;
     private String email;
     private String password;
+    private Date birthDay;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
