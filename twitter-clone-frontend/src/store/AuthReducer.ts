@@ -2,7 +2,7 @@ import { createAction, createReducer, PayloadAction } from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
 import { apiCall } from "./ApiMiddleware";
 
-export const signup = (username: string, password: string, email: string) =>
+export const signup = (username: string, password: string, email: string, birthDay: number) =>
   apiCall({
     url: "http://localhost:8080/api/v1/auth/register",
     onSuccess: saveJwtTokenFromResponse.toString(),
@@ -11,6 +11,7 @@ export const signup = (username: string, password: string, email: string) =>
       username,
       password,
       email,
+      birthDay
     },
   });
 
