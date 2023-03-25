@@ -11,6 +11,7 @@ import io.jsonwebtoken.security.Keys;
 
 import java.security.Key;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 @Component
@@ -41,7 +42,7 @@ public class JwtService {
         .setClaims(extraClaims)
         .setSubject(userDetails.getUsername())
         .setIssuedAt(new Date(System.currentTimeMillis()))
-        .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
+        .setExpiration(new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(14)))
         .signWith(getSignInKey(), SignatureAlgorithm.HS256)
         .compact();
   }
