@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.mohamed.halim.twitterclone.model.Profile;
 import com.mohamed.halim.twitterclone.model.dto.AuthResponse;
+import com.mohamed.halim.twitterclone.model.dto.LoginDto;
 import com.mohamed.halim.twitterclone.model.dto.RegisterDto;
 import com.mohamed.halim.twitterclone.repository.ProfileRepository;
 import com.mohamed.halim.twitterclone.security.JwtService;
@@ -27,11 +28,7 @@ public class ProfileService {
         }
         dto.setPassword(passwordEncoder.encode(dto.getPassword()));
         Profile saved = profileRepository.save(dto.toProfile());
-        return AuthResponse.builder()
-                .username(dto.getUsername())
-                .email(dto.getEmail())
-                .token(jwtService.generateToken(saved))
-                .build();
+        return buildAuthResponse(saved);
     }
 
     public void verifyToken(String token) {
@@ -42,6 +39,28 @@ public class ProfileService {
         }), () -> {
             throw new RuntimeException("Token is Invalid");
         });
+    }
+
+    public AuthResponse login(LoginDto dto) {
+        var profileOptional = profileRepository.findByUsername(dto.getUsername());
+        if (profileOptional.isEmpty()) {
+            profileOptional = profileRepository.findByEmail(dto.getUsername());
+        }
+        if (profileOptional.isPresent()
+                && passwordEncoder.matches(dto.getPassword(), profileOptional.get().getPassword())) {
+
+            return buildAuthResponse(profileOptional.get());
+        }
+        throw new RuntimeException("Username or Password is incorrect");
+
+    }
+
+    private AuthResponse buildAuthResponse(Profile profile) {
+        return AuthResponse.builder()
+                .username(profile.getUsername())
+                .email(profile.getEmail())
+                .token(jwtService.generateToken(profile))
+                .build();
     }
 
 }

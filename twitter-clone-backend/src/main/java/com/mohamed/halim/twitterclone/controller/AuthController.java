@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mohamed.halim.twitterclone.model.dto.AuthResponse;
+import com.mohamed.halim.twitterclone.model.dto.LoginDto;
 import com.mohamed.halim.twitterclone.model.dto.RegisterDto;
 import com.mohamed.halim.twitterclone.service.ProfileService;
 
@@ -36,5 +37,11 @@ public class AuthController {
         profileService.verifyToken(token);
 
     }
+
+    @PostMapping("/login")
+    public AuthResponse login(@RequestBody LoginDto loginDto) {
+        return profileService.login(loginDto);
+    }
+
 
 }
