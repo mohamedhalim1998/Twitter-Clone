@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mohamed.halim.twitterclone.model.dto.AuthResponse;
-import com.mohamed.halim.twitterclone.model.dto.UserDto;
+import com.mohamed.halim.twitterclone.model.dto.RegisterDto;
 import com.mohamed.halim.twitterclone.service.ProfileService;
 
 import lombok.AllArgsConstructor;
@@ -25,16 +25,16 @@ public class AuthController {
 
     @PostMapping("/register")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public AuthResponse registerUser(@RequestBody UserDto dto) {
+    public AuthResponse registerUser(@RequestBody RegisterDto dto) {
         return profileService.registerUser(dto);
     }
 
     @PostMapping("/verify_token")
     public void verifyToken(@RequestBody String json) throws JsonMappingException, JsonProcessingException {
-        JsonNode parent= new ObjectMapper().readTree(json);
+        JsonNode parent = new ObjectMapper().readTree(json);
         String token = parent.get("token").asText();
         profileService.verifyToken(token);
-        
+
     }
 
 }

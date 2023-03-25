@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.mohamed.halim.twitterclone.model.Profile;
 import com.mohamed.halim.twitterclone.model.dto.AuthResponse;
-import com.mohamed.halim.twitterclone.model.dto.UserDto;
+import com.mohamed.halim.twitterclone.model.dto.RegisterDto;
 import com.mohamed.halim.twitterclone.repository.ProfileRepository;
 import com.mohamed.halim.twitterclone.security.JwtService;
 
@@ -18,7 +18,7 @@ public class ProfileService {
     private PasswordEncoder passwordEncoder;
     private JwtService jwtService;
 
-    public AuthResponse registerUser(UserDto dto) {
+    public AuthResponse registerUser(RegisterDto dto) {
         if (profileRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new RuntimeException("Email used before");
         }
