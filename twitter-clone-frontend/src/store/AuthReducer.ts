@@ -1,33 +1,94 @@
 import { createAction, createReducer, PayloadAction } from "@reduxjs/toolkit";
+import { AxiosResponse } from "axios";
 import Cookies from "js-cookie";
 import { apiCall } from "./ApiMiddleware";
 
-export const signup = (username: string, password: string, email: string, birthDay: number) =>
+export interface AuthState {
+  loading: boolean;
+  token?: string;
+  verified: boolean;
+}
+
+export const signup = (
+  username: string,
+  password: string,
+  email: string,
+  birthDay: number
+) =>
   apiCall({
     url: "http://localhost:8080/api/v1/auth/register",
-    onSuccess: saveJwtTokenFromResponse.toString(),
+    onSuccess: saveJwtTokenFromResponse,
     method: "POST",
     body: {
       username,
       password,
       email,
-      birthDay
+      birthDay,
     },
   });
+export const verifyToken = () => {
+  const token = Cookies.get("access_token");
+  return apiCall({
+    url: "http://localhost:8080/api/v1/auth/verify_token",
+    onSuccess: loadTokenFromCookies,
+    onError: tokenVerificationFailed,
+    method: "POST",
+    body: {
+      token,
+    },
+  });
+};
 
 export const saveJwtTokenFromResponse = createAction<any>(
   "saveJwtTokenFromResponse"
 );
-export default createReducer(
-  {},
-  {
-    [saveJwtTokenFromResponse.type]: (
-      state: any,
-      action: PayloadAction<any>
-    ) => {
-      console.log(action.payload.headers);
-      const token = "access_token" as keyof typeof action.payload.headers;
-      Cookies.set("access_token", action.payload.headers[token]);
-    },
-  }
-);
+
+export const loadTokenFromCookies = createAction("loadTokenFromCookies");
+export const updateAuthLoading = createAction<boolean>("updateAuthLoading");
+export const updateAuthVerify = createAction<boolean>("updateAuthVerify");
+export const tokenVerificationFailed = createAction("tokenVerificationFailed");
+const initState: AuthState = {
+  loading: false,
+  verified: false,
+};
+
+export default createReducer<AuthState>(initState, {
+  [saveJwtTokenFromResponse.type]: (
+    state: AuthState,
+    action: PayloadAction<AxiosResponse>
+  ) => {
+    const token = action.payload.data["token"];
+    Cookies.set("access_token", token);
+    state.token = token;
+    state.verified = true;
+    state.loading = false;
+  },
+  [updateAuthLoading.type]: (
+    state: AuthState,
+    action: PayloadAction<boolean>
+  ) => {
+    state.loading = action.payload;
+  },
+  [updateAuthVerify.type]: (
+    state: AuthState,
+    action: PayloadAction<boolean>
+  ) => {
+    state.verified = action.payload;
+    state.loading = false;
+  },
+  [tokenVerificationFailed.type]: (
+    state: AuthState,
+    action: PayloadAction<AxiosResponse>
+  ) => {
+    state.verified = false;
+    state.loading = false;
+  },
+  [loadTokenFromCookies.type]: (
+    state: AuthState,
+    action: PayloadAction<any>
+  ) => {
+    state.token = Cookies.get("access_token");
+    state.loading = false;
+    state.verified = true;
+  },
+});
