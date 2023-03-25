@@ -7,6 +7,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mohamed.halim.twitterclone.model.dto.AuthResponse;
 import com.mohamed.halim.twitterclone.model.dto.UserDto;
 import com.mohamed.halim.twitterclone.service.ProfileService;
@@ -23,6 +27,14 @@ public class AuthController {
     @ResponseStatus(code = HttpStatus.CREATED)
     public AuthResponse registerUser(@RequestBody UserDto dto) {
         return profileService.registerUser(dto);
+    }
+
+    @PostMapping("/verify_token")
+    public void verifyToken(@RequestBody String json) throws JsonMappingException, JsonProcessingException {
+        JsonNode parent= new ObjectMapper().readTree(json);
+        String token = parent.get("token").asText();
+        profileService.verifyToken(token);
+        
     }
 
 }

@@ -19,10 +19,10 @@ public class ProfileService {
     private JwtService jwtService;
 
     public AuthResponse registerUser(UserDto dto) {
-        if(profileRepository.findByEmail(dto.getEmail()).isPresent()) {
+        if (profileRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new RuntimeException("Email used before");
         }
-        if(profileRepository.findByUsername(dto.getUsername()).isPresent()) {
+        if (profileRepository.findByUsername(dto.getUsername()).isPresent()) {
             throw new RuntimeException("username used before");
         }
         dto.setPassword(passwordEncoder.encode(dto.getPassword()));
@@ -32,6 +32,16 @@ public class ProfileService {
                 .email(dto.getEmail())
                 .token(jwtService.generateToken(saved))
                 .build();
+    }
+
+    public void verifyToken(String token) {
+        profileRepository.findByUsername(jwtService.extractUsername(token)).ifPresentOrElse((profile -> {
+            if (!jwtService.isTokenValid(token, profile)) {
+                throw new RuntimeException("Token is Invalid");
+            }
+        }), () -> {
+            throw new RuntimeException("Token is Invalid");
+        });
     }
 
 }
