@@ -1,8 +1,10 @@
 package com.mohamed.halim.twitterclone.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mohamed.halim.twitterclone.model.dto.AuthResponse;
@@ -18,6 +20,7 @@ public class AuthController {
     private final ProfileService profileService;
 
     @PostMapping("/register")
+    @ResponseStatus(code = HttpStatus.CREATED)
     public AuthResponse registerUser(@RequestBody UserDto dto) {
         return profileService.registerUser(dto);
     }
