@@ -1,13 +1,10 @@
 import { createAction, createReducer, PayloadAction } from "@reduxjs/toolkit";
 import { AxiosResponse } from "axios";
 import Cookies from "js-cookie";
+import AuthState from "../model/AuthState";
 import { apiCall } from "./ApiMiddleware";
 
-export interface AuthState {
-  loading: boolean;
-  token?: string;
-  verified: boolean;
-}
+
 
 export const signup = (
   username: string,
@@ -24,6 +21,17 @@ export const signup = (
       password,
       email,
       birthDay,
+    },
+  });
+
+export const login = (username: string, password: string) =>
+  apiCall({
+    url: "http://localhost:8080/api/v1/auth/login",
+    onSuccess: saveJwtTokenFromResponse,
+    method: "POST",
+    body: {
+      username,
+      password,
     },
   });
 export const verifyToken = () => {

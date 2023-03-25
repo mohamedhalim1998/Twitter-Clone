@@ -17,15 +17,9 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { toast, ToastContainer } from "react-toastify";
 import { RootState } from "../store/Store";
+import RegisterForm from "../model/RegisterForm";
 
-interface RegisterForm {
-  username: string;
-  email: string;
-  password: string;
-  day: string;
-  month: string;
-  year: string;
-}
+
 
 function SignupPage() {
   const dispatch = useAppDispatch();
