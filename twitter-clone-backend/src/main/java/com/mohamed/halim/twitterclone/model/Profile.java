@@ -25,6 +25,14 @@ public class Profile implements UserDetails {
     private String email;
     private String password;
     private Date birthDay;
+    private Date createdAt;
+    private String bio;
+    private String location;
+    private Long pinnedTweetId;
+    private String profileImageUrl;
+    private String coverImageUrl;
+    private boolean profileProtected;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
