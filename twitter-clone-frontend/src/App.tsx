@@ -16,7 +16,7 @@ function App() {
         <Route path="/signup" element={<SignupPage />}></Route>
         <Route path="/login" element={<LoginPage />}></Route>
         <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home />} />
         </Route>
       </Routes>
       <ToastContainer />

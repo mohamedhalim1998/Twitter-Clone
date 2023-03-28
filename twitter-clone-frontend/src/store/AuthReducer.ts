@@ -4,8 +4,6 @@ import Cookies from "js-cookie";
 import AuthState from "../model/AuthState";
 import { apiCall } from "./ApiMiddleware";
 
-
-
 export const signup = (
   username: string,
   password: string,
@@ -34,6 +32,13 @@ export const login = (username: string, password: string) =>
       password,
     },
   });
+export const logout = () =>
+  apiCall({
+    url: "http://localhost:8080/api/v1/auth/logout",
+    onSuccess: removeJwtToken,
+    method: "POST",
+    body: {},
+  });
 export const verifyToken = () => {
   const token = Cookies.get("access_token");
   return apiCall({
@@ -50,6 +55,7 @@ export const verifyToken = () => {
 export const saveJwtTokenFromResponse = createAction<any>(
   "saveJwtTokenFromResponse"
 );
+export const removeJwtToken = createAction<any>("removeJwtToken");
 
 export const loadTokenFromCookies = createAction("loadTokenFromCookies");
 export const updateAuthLoading = createAction<boolean>("updateAuthLoading");
@@ -98,5 +104,14 @@ export default createReducer<AuthState>(initState, {
     state.token = Cookies.get("access_token");
     state.loading = false;
     state.verified = true;
+  },
+  [removeJwtToken.type]: (
+    state: AuthState,
+    action: PayloadAction<AxiosResponse>
+  ) => {
+    state.token = undefined;
+    state.loading = false;
+    state.verified = false;
+    Cookies.remove("access_token");
   },
 });
