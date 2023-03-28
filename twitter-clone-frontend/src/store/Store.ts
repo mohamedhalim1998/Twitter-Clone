@@ -4,13 +4,11 @@ import AuthReducer from "./AuthReducer";
 
 export const store = configureStore({
   reducer: {
-    auth: AuthReducer
+    auth: AuthReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: ["apiCall"],
-      },
+      serializableCheck: false,
     }).concat(apiMiddleware),
 });
 
