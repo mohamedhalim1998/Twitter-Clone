@@ -23,7 +23,7 @@ const ProtectedRoute: React.FC = () => {
   return auth.verified == true ? (
     <Outlet />
   ) : (
-    <Navigate to="/signup" state={{ from: location }} />
+    <Navigate to="/login" state={{ from: location }} />
   );
 };
 export default ProtectedRoute;
