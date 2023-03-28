@@ -59,14 +59,32 @@ export const LockIcon = () => (
     <path d="M17.5 7H17v-.25c0-2.76-2.24-5-5-5s-5 2.24-5 5V7h-.5C5.12 7 4 8.12 4 9.5v9C4 19.88 5.12 21 6.5 21h11c1.39 0 2.5-1.12 2.5-2.5v-9C20 8.12 18.89 7 17.5 7zM13 14.73V17h-2v-2.27c-.59-.34-1-.99-1-1.73 0-1.1.9-2 2-2 1.11 0 2 .9 2 2 0 .74-.4 1.39-1 1.73zM15 7H9v-.25c0-1.66 1.35-3 3-3 1.66 0 3 1.34 3 3V7z"></path>
   </svg>
 );
-export const MoreIconWithoutCircle = () => (
+export const MoreIconWithoutCircle = (props: { fill?: string }) => (
   <svg
     viewBox="0 0 24 24"
     aria-label="Protected account"
     role="img"
-    className="w-6"
-    fill="#0F1419"
+    className="w-6 pl-auto ml-auto"
+    fill={props.fill ? props.fill : "#0F1419"}
   >
     <path d="M3 12c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9 2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm7 0c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"></path>{" "}
+  </svg>
+);
+
+export const SearchIcon = () => (
+  <svg
+    fill="none"
+    className="w-6 mx-2 text-gray-600"
+    stroke="currentColor"
+    strokeWidth={1.5}
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+    />
   </svg>
 );
