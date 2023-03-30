@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   BookmarkIcon,
   ExploreIcon,
@@ -9,14 +9,33 @@ import {
   NotificationIcon,
   ProfileIcon,
 } from "./Icons";
-import { MenuItem, Paper, Popper } from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../store/hooks";
 import { logout } from "../store/AuthReducer";
+import DropDownMenu, { MenuItemParam } from "./DropDownMenu";
+import { stat } from "fs";
+import { SideBarItem } from "./SideBarItem";
+import { TweetDialog, TweetDialogForm } from "./TweetDialog";
+import { postTweet } from "../store/TweetReducer";
+import moment from "moment";
 
-function SideBar() {
+export function SideBar() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.keyCode === 27) {
+        setDialogOpen(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
   return (
     <div className="flex flex-col m-5 gap-3 h-full">
       <Logo />
@@ -30,7 +49,35 @@ function SideBar() {
       <SideBarItem name="Message" url="/messages" icon={MessageIcon()} />
       <SideBarItem name="Bookmarks" url="/bookmarks" icon={BookmarkIcon()} />
       <SideBarItem name="Profile" url="/mohamedhalim98" icon={ProfileIcon()} />
-      <TweetButton />
+      <TweetButton
+        onClick={() => {
+          setDialogOpen(true);
+        }}
+      />
+      <TweetDialog
+        isOpen={dialogOpen}
+        onClose={() => {
+          setDialogOpen(false);
+        }}
+        onSubmit={(data: TweetDialogForm) => {
+          dispatch(
+            postTweet(
+              data.text,
+              data.isPoll
+                ? {
+                    options: data.pollOptions,
+                    duration: moment()
+                      .day(data.pollLengthDays!!)
+                      .hour(data.pollLengthHours!!)
+                      .minute(data.pollLengthMinute!!)
+                      .valueOf(),
+                  }
+                : undefined,
+              data.hasMedia ? data.media : undefined
+            )
+          );
+        }}
+      />
       <ProfileMenu
         logout={() => {
           dispatch(logout());
@@ -41,32 +88,14 @@ function SideBar() {
   );
 }
 
-const SideBarItem = (props: {
-  name: string;
-  url: string;
-  icon: JSX.Element;
-  selected?: boolean;
-}) => {
+export const TweetButton: React.FC<React.HTMLProps<HTMLDivElement>> = (
+  props
+) => {
   return (
-    <Link
-      to={props.url}
-      className="flex flex-row gap-5 p-3 w-fit rounded-3xl text-gray-900 hover:bg-gray-300 cursor-pointer"
+    <div
+      className="bg-theme text-white text-center text-2xl p-2 rounded-3xl w-4/5 hover:bg-theme-hover cursor-pointer"
+      {...props}
     >
-      {props.icon}
-      <h2
-        className={"text-xl py-auto my-auto".concat(
-          props.selected ? "font-semibold" : ""
-        )}
-      >
-        {props.name}
-      </h2>
-    </Link>
-  );
-};
-
-const TweetButton = () => {
-  return (
-    <div className="bg-theme text-white text-center text-2xl p-2 rounded-3xl w-4/5 hover:bg-theme-hover cursor-pointer">
       Tweet
     </div>
   );
@@ -91,39 +120,8 @@ const Profile = () => {
 };
 
 function ProfileMenu(props: { logout: () => void }) {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(anchorEl ? null : event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  return (
-    <div className="">
-      <div
-        id="basic-button"
-        aria-controls={open ? "basic-menu" : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? "true" : undefined}
-        onClick={handleClick}
-      >
-        <Profile />
-      </div>
-      <Popper open={open} anchorEl={anchorEl}>
-        <Paper>
-          <MenuItem
-            onClick={() => {
-              handleClose();
-              props.logout();
-            }}
-          >
-            Logout
-          </MenuItem>
-        </Paper>
-      </Popper>
-    </div>
-  );
+  const items: MenuItemParam[] = [{ name: "logout", onClick: logout }];
+  return <DropDownMenu source={Profile()} items={items} />;
 }
+
 export default SideBar;
