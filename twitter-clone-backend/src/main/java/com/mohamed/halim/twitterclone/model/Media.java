@@ -1,8 +1,11 @@
 package com.mohamed.halim.twitterclone.model;
 
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,13 +19,12 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Media {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     @Enumerated(EnumType.STRING)
     private MediaType type;
     private String url;
     private Long duration;
-    private int height;
-    private int width;
-    
-    
+    @Embedded
+    private MediaDimention dimentions;
 }
