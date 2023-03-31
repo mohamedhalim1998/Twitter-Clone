@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 public class Profile implements UserDetails {
     @Id
     private String username;
+    private String fullname;
     private String email;
     private String password;
     private Date birthDay;

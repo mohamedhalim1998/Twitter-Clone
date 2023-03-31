@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 public class ProfileDto {
     private String username;
+    private String fullname;
     private String email;
     private String password;
     private long birthDay;
@@ -23,15 +24,14 @@ public class ProfileDto {
     private String profileImageUrl;
     private String coverImageUrl;
     private boolean profileProtected;
-    private int folowers;
+    private int followers;
     private int following;
     private int tweets;
 
-    public static ProfileDto fronProfile(Profile profile) {
+    public static ProfileDto fromProfile(Profile profile) {
         return ProfileDto.builder()
+                .fullname(profile.getFullname())
                 .username(profile.getUsername())
-                .email(profile.getEmail())
-                .birthDay(profile.getBirthDay().getTime())
                 .createdAt(profile.getCreatedAt().getTime())
                 .bio(profile.getBio())
                 .location(profile.getLocation())
