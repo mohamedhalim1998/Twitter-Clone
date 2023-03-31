@@ -2,8 +2,10 @@ package com.mohamed.halim.twitterclone.service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.apache.tika.exception.TikaException;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.xml.sax.SAXException;
@@ -23,6 +25,8 @@ public class TweetService {
     private TweetRepository tweetRepository;
     private MediaService mediaService;
     private PollService pollService;
+    private LikeService likeService;
+    private RetweetService retweetService;
 
     public TweetDto addTweet(TweetDto dto, MultipartFile media, PollDto poll, String username)
             throws IllegalStateException, IOException, SAXException, TikaException {
@@ -43,7 +47,25 @@ public class TweetService {
                 .createdDate(LocalDateTime.now())
                 .replayToId(dto.getReplyToId())
                 .build();
+                
         return TweetDto.from(tweetRepository.save(tweet));
+    }
+
+    public List<TweetDto> searchTweets(String query) {
+        return tweetRepository.searchTweets(query, PageRequest.of(0, 20)).stream().map(this::convertToDto).toList();
+    }
+
+    private TweetDto convertToDto(Tweet tweet) {
+        TweetDto dto = TweetDto.from(tweet);
+        dto.setLikes(likeService.countTweetLikes(dto.getId()));
+        dto.setRetweet(retweetService.countTweetRetweets(dto.getId()));
+        dto.setReplays(tweetRepository.countByConversationId(dto.getId()));
+        return dto;
+
+    }
+
+    public int countUserTweets(String username) {
+        return tweetRepository.countByAuthorId(username);
     }
 
 }
