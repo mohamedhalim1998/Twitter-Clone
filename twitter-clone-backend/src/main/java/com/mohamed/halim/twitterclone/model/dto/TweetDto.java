@@ -1,6 +1,6 @@
 package com.mohamed.halim.twitterclone.model.dto;
 
-import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 import com.mohamed.halim.twitterclone.model.Attachment;
@@ -22,7 +22,7 @@ public class TweetDto {
     private Attachment attachment;
     private String authorId;
     private Long conversationId;
-    private LocalDateTime createdDate;
+    private long createdDate;
     private Long replyToId;
     private int likes;
     private int replays;
@@ -30,16 +30,16 @@ public class TweetDto {
 
     public static TweetDto from(Tweet tweet) {
         return TweetDto.builder()
-            .id(tweet.getId())
-            .text(tweet.getText())
-            .editHistory(tweet.getEditHistory())
-            .attachment(tweet.getAttachment())
-            .authorId(tweet.getAuthorId())
-            .conversationId(tweet.getConversationId())
-            .createdDate(tweet.getCreatedDate())
-            .replyToId(tweet.getReplayToId())
-            .build();
+                .id(tweet.getId())
+                .text(tweet.getText())
+                .editHistory(tweet.getEditHistory())
+                .attachment(tweet.getAttachment())
+                .authorId(tweet.getAuthorId())
+                .conversationId(tweet.getConversationId())
+                .createdDate(
+                        tweet.getCreatedDate().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli())
+                .replyToId(tweet.getReplayToId())
+                .build();
     }
 
-    
 }
