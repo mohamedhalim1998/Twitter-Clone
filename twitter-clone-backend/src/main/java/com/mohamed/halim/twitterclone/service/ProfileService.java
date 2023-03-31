@@ -1,11 +1,15 @@
 package com.mohamed.halim.twitterclone.service;
 
+import java.util.List;
+
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.mohamed.halim.twitterclone.model.Profile;
 import com.mohamed.halim.twitterclone.model.dto.AuthResponse;
 import com.mohamed.halim.twitterclone.model.dto.LoginDto;
+import com.mohamed.halim.twitterclone.model.dto.ProfileDto;
 import com.mohamed.halim.twitterclone.model.dto.RegisterDto;
 import com.mohamed.halim.twitterclone.repository.ProfileRepository;
 import com.mohamed.halim.twitterclone.security.JwtService;
@@ -18,6 +22,8 @@ public class ProfileService {
     private ProfileRepository profileRepository;
     private PasswordEncoder passwordEncoder;
     private JwtService jwtService;
+    private FollowService followService;
+    private TweetService tweetService;
 
     public AuthResponse registerUser(RegisterDto dto) {
         if (profileRepository.findByEmail(dto.getEmail()).isPresent()) {
@@ -61,6 +67,19 @@ public class ProfileService {
                 .email(profile.getEmail())
                 .token(jwtService.generateToken(profile))
                 .build();
+    }
+
+    public List<ProfileDto> searchProfiles(String query) {
+        return profileRepository.searchProfiles(query, PageRequest.of(0, 20)).stream().map(this::mapToDto).toList();
+    }
+
+    private ProfileDto mapToDto(Profile profile) {
+        ProfileDto dto = ProfileDto.fromProfile(profile);
+        dto.setFollowing(followService.countUserFollowing(profile.getUsername()));
+        dto.setFollowers(followService.countUserFollower(profile.getUsername()));
+        dto.setTweets(tweetService.countUserTweets(profile.getUsername()));
+        return dto;
+
     }
 
 }
