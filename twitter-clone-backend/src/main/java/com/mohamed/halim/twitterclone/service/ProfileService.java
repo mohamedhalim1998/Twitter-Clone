@@ -6,11 +6,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.mohamed.halim.twitterclone.model.Block;
 import com.mohamed.halim.twitterclone.model.Profile;
 import com.mohamed.halim.twitterclone.model.dto.AuthResponse;
 import com.mohamed.halim.twitterclone.model.dto.LoginDto;
 import com.mohamed.halim.twitterclone.model.dto.ProfileDto;
 import com.mohamed.halim.twitterclone.model.dto.RegisterDto;
+import com.mohamed.halim.twitterclone.repository.BlockRepository;
 import com.mohamed.halim.twitterclone.repository.ProfileRepository;
 import com.mohamed.halim.twitterclone.security.JwtService;
 
@@ -24,6 +26,7 @@ public class ProfileService {
     private JwtService jwtService;
     private FollowService followService;
     private TweetService tweetService;
+    private BlockRepository blockRepository;
 
     public AuthResponse registerUser(RegisterDto dto) {
         if (profileRepository.findByEmail(dto.getEmail()).isPresent()) {
@@ -82,4 +85,9 @@ public class ProfileService {
 
     }
 
+    public void block(String blocker, String blocking) {
+        blockRepository.save(Block.builder().blocker(blocker).blocking(blocking).build());
+    }
+
+    
 }
