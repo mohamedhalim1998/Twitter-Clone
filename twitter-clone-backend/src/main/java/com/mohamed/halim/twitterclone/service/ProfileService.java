@@ -89,5 +89,13 @@ public class ProfileService {
         blockRepository.save(Block.builder().blocker(blocker).blocking(blocking).build());
     }
 
-    
+    public void follow(String follower, String following) {
+        followService.addFollow(follower, following);
+    }
+
+    public void unfollow(String follower, String following) {
+        followService.removeFollow(follower, following);
+
+    }
+
 }

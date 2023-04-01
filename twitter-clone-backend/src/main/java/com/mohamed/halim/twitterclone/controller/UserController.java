@@ -22,5 +22,13 @@ public class UserController {
         profileService.block(principal.getName(), username);
     }
 
-   
+    @PostMapping("/follow/{username}")
+    public void followUser(Principal principal, @PathVariable String username) {
+        profileService.follow(principal.getName(), username);
+    }   
+    @PostMapping("/unfollow/{username}")
+    public void unfollowUser(Principal principal, @PathVariable String username) {
+        profileService.unfollow(principal.getName(), username);
+    }
+
 }
