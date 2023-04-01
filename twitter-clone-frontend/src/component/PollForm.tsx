@@ -1,12 +1,12 @@
 import React from "react";
 import produce from "immer";
-import { TweetDialogForm } from "./TweetDialog";
 import { SelectChangeEvent, FormControl, InputLabel, Select, MenuItem, TextField } from "@mui/material";
 import _ from "lodash";
+import { TweetFormParams } from "./TweetForm";
 
 export function PollForm(
-  state: TweetDialogForm,
-  setState: React.Dispatch<React.SetStateAction<TweetDialogForm>>): React.ReactNode {
+  state: TweetFormParams,
+  setState: React.Dispatch<React.SetStateAction<TweetFormParams>>): React.ReactNode {
   return (
     <div className="w-full flex flex-col gap-5 border rounded-xl p-3 my-4 pb-0-">
       <PollOption
@@ -70,8 +70,8 @@ export function PollForm(
   );
 }
 export function PollLength(
-  state: TweetDialogForm,
-  setState: React.Dispatch<React.SetStateAction<TweetDialogForm>>
+  state: TweetFormParams,
+  setState: React.Dispatch<React.SetStateAction<TweetFormParams>>
 ): React.ReactNode {
   return (
     <div>

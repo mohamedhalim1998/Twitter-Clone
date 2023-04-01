@@ -15,9 +15,10 @@ import { logout } from "../store/AuthReducer";
 import DropDownMenu, { MenuItemParam } from "./DropDownMenu";
 import { stat } from "fs";
 import { SideBarItem } from "./SideBarItem";
-import { TweetDialog, TweetDialogForm } from "./TweetDialog";
+import { TweetDialog } from "./TweetDialog";
 import { postTweet } from "../store/TweetReducer";
 import moment from "moment";
+import { TweetFormParams } from "./TweetForm";
 
 export function SideBar() {
   const dispatch = useAppDispatch();
@@ -37,7 +38,7 @@ export function SideBar() {
     };
   }, []);
   return (
-    <div className="flex flex-col m-5 gap-3 h-full">
+    <div className="flex flex-col my-5 w-full gap-3">
       <Logo />
       <SideBarItem name="Home" url="/" icon={HomeIcon()} selected />
       <SideBarItem name="Explore" url="/explore" icon={ExploreIcon()} />
@@ -59,7 +60,7 @@ export function SideBar() {
         onClose={() => {
           setDialogOpen(false);
         }}
-        onSubmit={(data: TweetDialogForm) => {
+        onSubmit={(data: TweetFormParams) => {
           dispatch(
             postTweet(
               data.text,
@@ -103,7 +104,7 @@ export const TweetButton: React.FC<React.HTMLProps<HTMLDivElement>> = (
 
 const Profile = () => {
   return (
-    <div className="flex flex-row gap-2 p-3 hover:bg-gray-300 cursor-pointer rounded-4xl">
+    <div className="flex flex-row gap-2 p-3 hover:bg-gray-300 cursor-pointer rounded-4xl ">
       <div
         className="rounded-full bg-center w-10 h-10 bg-cover"
         style={{
