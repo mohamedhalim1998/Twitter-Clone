@@ -1,7 +1,8 @@
-import { Popper, Paper, MenuItem } from "@mui/material";
+import { Popper, Paper, MenuItem, Menu } from "@mui/material";
 import React from "react";
 
 export interface MenuItemParam {
+  icon?: JSX.Element;
   name: JSX.Element | string;
   onClick: () => void;
 }
@@ -30,14 +31,35 @@ function DropDownMenu(props: {
       >
         {props.source}
       </div>
-      <Popper open={open} anchorEl={anchorEl}>
+      <Menu
+        id="demo-positioned-menu"
+        aria-labelledby="demo-positioned-button"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+
+          horizontal: "right",
+        }}
+      >
+        {" "}
         {props.header}
-        <Paper>
-          {props.items?.map((item) => {
-            return <MenuItem onClick={item.onClick}>{item.name}</MenuItem>;
-          })}
-        </Paper>
-      </Popper>
+        {props.items?.map((item, i) => {
+          return (
+            <MenuItem key={i} onClick={item.onClick}>
+              <div className="flex flex-row">
+                {item.icon}
+                {item.name}
+              </div>
+            </MenuItem>
+          );
+        })}
+      </Menu>
     </div>
   );
 }
