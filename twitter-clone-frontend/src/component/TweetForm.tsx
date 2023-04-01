@@ -26,7 +26,7 @@ function TweetForm(props: { onSubmit: (date: TweetFormParams) => void }) {
   });
 
   return (
-    <div>
+    <div className="px-6">
       {" "}
       <div className="flex flex-row gap-5">
         <div

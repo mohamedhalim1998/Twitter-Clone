@@ -23,6 +23,7 @@ export function MediaButton(props: {
           if (props.onClick) props.onClick(target);
         }}
         disabled={props.disabled}
+        hidden
         onChange={(e) => {
           const target = e.target as HTMLInputElement;
           console.log("file chancged");
