@@ -11,7 +11,7 @@ export default interface Tweet {
   replays: number;
   retweet: number;
 }
-interface Attachment {
+export interface Attachment {
   type: "MEDIA" | "POLL";
   id: number;
 }
