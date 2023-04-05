@@ -47,11 +47,16 @@ function DropDownMenu(props: {
           horizontal: "right",
         }}
       >
-        {" "}
         {props.header}
         {props.items?.map((item, i) => {
           return (
-            <MenuItem key={i} onClick={item.onClick}>
+            <MenuItem
+              key={i}
+              onClick={() => {
+                item.onClick();
+                handleClose();
+              }}
+            >
               <div className="flex flex-row">
                 {item.icon}
                 {item.name}
