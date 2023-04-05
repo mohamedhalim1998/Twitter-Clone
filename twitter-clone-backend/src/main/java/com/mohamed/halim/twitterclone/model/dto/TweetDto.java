@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.mohamed.halim.twitterclone.model.Attachment;
 import com.mohamed.halim.twitterclone.model.Tweet;
+import com.mohamed.halim.twitterclone.model.TweetRefrence;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,6 +28,8 @@ public class TweetDto {
     private int likes;
     private int replays;
     private int retweet;
+    private Includes includes;
+    private TweetRefrence tweetRefrence;
 
     public static TweetDto from(Tweet tweet) {
         return TweetDto.builder()
@@ -38,7 +41,7 @@ public class TweetDto {
                 .conversationId(tweet.getConversationId())
                 .createdDate(
                         tweet.getCreatedDate().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli())
-                .replyToId(tweet.getReplayToId())
+                .tweetRefrence(tweet.getTweetRefrence())
                 .build();
     }
 
