@@ -1,5 +1,6 @@
 import React from "react";
 import { number } from "yup";
+import { FollowButton } from "./FollowButton";
 import { MoreIconWithoutCircle, SearchIcon } from "./Icons";
 import ProfilePanal from "./ProfilePanal";
 
@@ -72,11 +73,4 @@ const WhoToFollow = () => {
   );
 };
 
-const FollowButton = () => {
-  return (
-    <div className="bg-gray-900 text-white text-center p-2  px-4 rounded-3xl  hover:bg-gray-800 cursor-pointer">
-      Follow
-    </div>
-  );
-};
 export default RightBar;
