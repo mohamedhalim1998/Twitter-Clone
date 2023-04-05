@@ -14,6 +14,7 @@ import com.mohamed.halim.twitterclone.model.dto.ProfileDto;
 import com.mohamed.halim.twitterclone.model.dto.RegisterDto;
 import com.mohamed.halim.twitterclone.repository.BlockRepository;
 import com.mohamed.halim.twitterclone.repository.ProfileRepository;
+import com.mohamed.halim.twitterclone.repository.TweetRepository;
 import com.mohamed.halim.twitterclone.security.JwtService;
 
 import lombok.AllArgsConstructor;
@@ -25,7 +26,7 @@ public class ProfileService {
     private PasswordEncoder passwordEncoder;
     private JwtService jwtService;
     private FollowService followService;
-    private TweetService tweetService;
+    private TweetRepository tweetRepository;
     private BlockRepository blockRepository;
 
     public AuthResponse registerUser(RegisterDto dto) {
@@ -80,7 +81,7 @@ public class ProfileService {
         ProfileDto dto = ProfileDto.fromProfile(profile);
         dto.setFollowing(followService.countUserFollowing(profile.getUsername()));
         dto.setFollowers(followService.countUserFollower(profile.getUsername()));
-        dto.setTweets(tweetService.countUserTweets(profile.getUsername()));
+        dto.setTweets(tweetRepository.countByAuthorId(profile.getUsername()));
         return dto;
 
     }
@@ -96,6 +97,10 @@ public class ProfileService {
     public void unfollow(String follower, String following) {
         followService.removeFollow(follower, following);
 
+    }
+
+    public ProfileDto getProfile(String username) {
+        return profileRepository.findByUsername(username).map(this::mapToDto).get();
     }
 
 }
