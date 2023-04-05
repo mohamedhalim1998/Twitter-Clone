@@ -24,8 +24,9 @@ import org.xml.sax.SAXException;
 
 import com.google.common.io.Files;
 import com.mohamed.halim.twitterclone.model.Media;
-import com.mohamed.halim.twitterclone.model.MediaDimention;
+import com.mohamed.halim.twitterclone.model.MediaDimension;
 import com.mohamed.halim.twitterclone.model.MediaType;
+import com.mohamed.halim.twitterclone.model.dto.MediaDto;
 import com.mohamed.halim.twitterclone.repository.MediaRepository;
 
 import lombok.AllArgsConstructor;
@@ -63,7 +64,7 @@ public class MediaService {
 
     }
 
-    private MediaDimention getFileDimentions(File file, MediaType type)
+    private MediaDimension getFileDimentions(File file, MediaType type)
             throws IOException, SAXException, TikaException {
         if (type == MediaType.IMAGE) {
             return getImageDimentions(file);
@@ -72,14 +73,14 @@ public class MediaService {
         }
     }
 
-    private MediaDimention getImageDimentions(File file) throws IOException {
+    private MediaDimension getImageDimentions(File file) throws IOException {
         BufferedImage image = ImageIO.read(file);
         int width = image.getWidth();
         int height = image.getHeight();
-        return new MediaDimention(height, width);
+        return new MediaDimension(height, width);
     }
 
-    private MediaDimention getVideoDimentions(File file) throws IOException, SAXException, TikaException {
+    private MediaDimension getVideoDimentions(File file) throws IOException, SAXException, TikaException {
 
         BodyContentHandler handler = new BodyContentHandler();
         Metadata metadata = new Metadata();
@@ -89,7 +90,7 @@ public class MediaService {
         MP4Parser MP4Parser = new MP4Parser();
         MP4Parser.parse(inputstream, handler, metadata, pcontext);
 
-        return new MediaDimention(Integer.parseInt(metadata.get(TIFF.IMAGE_LENGTH)),
+        return new MediaDimension(Integer.parseInt(metadata.get(TIFF.IMAGE_LENGTH)),
                 Integer.parseInt(metadata.get(TIFF.IMAGE_WIDTH)));
     }
 
@@ -114,5 +115,9 @@ public class MediaService {
             default -> MediaType.VIDEO;
         };
 
+    }
+
+    public MediaDto getMedia(Long attacmentId) {
+        return mediaRepository.findById(attacmentId).map(MediaDto::fromMedia).get();
     }
 }
