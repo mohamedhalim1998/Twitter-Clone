@@ -1,20 +1,26 @@
 import moment from "moment";
-import React from "react";
-import ProfilePanal from "../component/ProfilePanal";
+import React, { useEffect } from "react";
 import RightBar from "../component/RightBar";
 import SideBar from "../component/SideBar";
 import TweetForm, { TweetFormParams } from "../component/TweetForm";
-import { useAppDispatch } from "../store/hooks";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { postTweet } from "../store/TweetReducer";
-import {
-  LockIcon,
-  ShareIcon,
-} from "../component/Icons";
 import { TweetCard } from "../component/TweetCard";
 import { Divider } from "../component/Divider";
+import { loadProfile, ProfileState, updateProfileLoading } from "../store/ProfileReducer";
+import { RootState } from "../store/Store";
 
 function Home() {
   const dispatch = useAppDispatch();
+  const profile: ProfileState = useAppSelector(
+    (state: RootState) => state.profile
+  );
+  useEffect(() => {
+    if (!profile.loading) {
+      dispatch(updateProfileLoading(true));
+      dispatch(loadProfile());
+    }
+  }, []);
 
   return (
     <div className="w-7/10 mx-auto grid grid-cols-11">
@@ -44,7 +50,6 @@ function Home() {
             );
           }}
         />
-        <TweetCard />
       </div>
       <div className="col-span-3">
         <RightBar />
