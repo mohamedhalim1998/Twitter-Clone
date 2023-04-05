@@ -1,16 +1,11 @@
 package com.mohamed.halim.twitterclone.config;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.Date;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.mohamed.halim.twitterclone.model.Attachment;
 import com.mohamed.halim.twitterclone.model.AttachmentType;
@@ -24,7 +19,6 @@ import com.mohamed.halim.twitterclone.model.TweetRefrenceType;
 import com.mohamed.halim.twitterclone.repository.MediaRepository;
 import com.mohamed.halim.twitterclone.repository.ProfileRepository;
 import com.mohamed.halim.twitterclone.repository.TweetRepository;
-import com.mohamed.halim.twitterclone.service.MediaService;
 
 import lombok.AllArgsConstructor;
 

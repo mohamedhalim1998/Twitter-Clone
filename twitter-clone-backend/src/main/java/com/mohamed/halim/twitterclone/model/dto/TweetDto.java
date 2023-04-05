@@ -24,7 +24,6 @@ public class TweetDto {
     private String authorId;
     private Long conversationId;
     private long createdDate;
-    private Long replyToId;
     private int likes;
     private int replays;
     private int retweet;
