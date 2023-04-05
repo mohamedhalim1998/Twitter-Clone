@@ -15,4 +15,8 @@ public class PollService {
     public Long addPoll(PollDto pollDto) {
         return pollRepository.save(pollDto.toPoll()).getId();
     }
+
+    public PollDto getPoll(Long attacmentId) {
+        return pollRepository.findById(attacmentId).map(PollDto::fromPoll).get();
+    }
 }

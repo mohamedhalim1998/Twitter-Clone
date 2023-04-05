@@ -13,6 +13,7 @@ import org.xml.sax.SAXException;
 import com.mohamed.halim.twitterclone.model.Attachment;
 import com.mohamed.halim.twitterclone.model.AttachmentType;
 import com.mohamed.halim.twitterclone.model.Tweet;
+import com.mohamed.halim.twitterclone.model.dto.Includes;
 import com.mohamed.halim.twitterclone.model.dto.PollDto;
 import com.mohamed.halim.twitterclone.model.dto.TweetDto;
 import com.mohamed.halim.twitterclone.repository.TweetRepository;
@@ -27,6 +28,7 @@ public class TweetService {
     private PollService pollService;
     private LikeService likeService;
     private RetweetService retweetService;
+    private ProfileService profileService;
 
     public TweetDto addTweet(TweetDto dto, MultipartFile media, PollDto poll, String username)
             throws IllegalStateException, IOException, SAXException, TikaException {
@@ -45,10 +47,14 @@ public class TweetService {
                 .attachment(attachment)
                 .conversationId(dto.getConversationId())
                 .createdDate(LocalDateTime.now())
-                .replayToId(dto.getReplyToId())
+                .tweetRefrence(dto.getTweetRefrence())
                 .build();
-                
+
         return TweetDto.from(tweetRepository.save(tweet));
+    }
+
+    public TweetDto getTweet(Long id) {
+        return tweetRepository.findById(id).map(t -> convertToDto(t, true)).get();
     }
 
     public List<TweetDto> searchTweets(String query) {
@@ -56,16 +62,36 @@ public class TweetService {
     }
 
     private TweetDto convertToDto(Tweet tweet) {
+        return convertToDto(tweet, false);
+    }
+
+    private TweetDto convertToDto(Tweet tweet, boolean withIcludes) {
         TweetDto dto = TweetDto.from(tweet);
         dto.setLikes(likeService.countTweetLikes(dto.getId()));
         dto.setRetweet(retweetService.countTweetRetweets(dto.getId()));
         dto.setReplays(tweetRepository.countByConversationId(dto.getId()));
+        if (withIcludes) {
+            Includes includes = getIncudes(tweet);
+            dto.setIncludes(includes);
+        }
         return dto;
-
     }
 
-    public int countUserTweets(String username) {
-        return tweetRepository.countByAuthorId(username);
+    private Includes getIncudes(Tweet tweet) {
+        Includes.Builder builder = new Includes.Builder();
+        if (tweet.getAttachment() != null && tweet.getAttachment().getType() == AttachmentType.MEDIA) {
+            builder.addMedia(mediaService.getMedia(tweet.getAttachment().getAttacmentId()));
+        }
+        if (tweet.getAttachment() != null && tweet.getAttachment().getType() == AttachmentType.POLL) {
+            builder.addPoll(pollService.getPoll(tweet.getAttachment().getAttacmentId()));
+        }
+        builder.addUser(profileService.getProfile(tweet.getAuthorId()));
+        if (tweet.getTweetRefrence() != null) {
+            TweetDto refTweet = tweetRepository.findById(tweet.getTweetRefrence().getRefId()).map(this::convertToDto)
+                    .get();
+            builder.addTweet(refTweet).addUser(profileService.getProfile(refTweet.getAuthorId()));
+        }
+        return builder.build();
     }
 
 }
