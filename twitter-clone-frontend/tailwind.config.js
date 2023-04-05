@@ -4,14 +4,17 @@ module.exports = {
   theme: {
     extend: {
       width: {
-        "7\/10": "70%"
+        "7/10": "70%",
+      },
+      minHeight: {
+        "52": "13rem",
       },
       colors: {
-        theme: '#1D9BF0',
-        "theme-hover": '#1D9BF0',
+        theme: "#1D9BF0",
+        "theme-hover": "#1D9BF0",
       },
       borderRadius: {
-        '4xl': '3rem',
+        "4xl": "3rem",
       },
     },
   },

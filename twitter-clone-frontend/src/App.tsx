@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import ProtectedRoute from "./component/ProtectedRoute";
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
+import ProfilePage from "./pages/ProfilePage";
 
 function App() {
   return (
@@ -16,7 +17,8 @@ function App() {
         <Route path="/signup" element={<SignupPage />}></Route>
         <Route path="/login" element={<LoginPage />}></Route>
         <Route element={<ProtectedRoute />}>
-        <Route path="/" element={<Home />} />
+          <Route path="/:username" element={<ProfilePage />} />
+          <Route path="/" element={<Home />} />
         </Route>
       </Routes>
       <ToastContainer />
