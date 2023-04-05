@@ -3,7 +3,6 @@ package com.mohamed.halim.twitterclone.model;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import jakarta.annotation.Generated;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,6 +29,7 @@ public class Tweet {
     private String authorId;
     private Long conversationId;
     private LocalDateTime createdDate;
-    private Long replayToId;
+    @Embedded
+    private TweetRefrence tweetRefrence;
 
 }
