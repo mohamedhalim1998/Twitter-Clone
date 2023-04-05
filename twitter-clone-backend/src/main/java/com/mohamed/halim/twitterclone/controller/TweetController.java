@@ -5,6 +5,8 @@ import java.security.Principal;
 
 
 import org.apache.tika.exception.TikaException;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -30,5 +32,10 @@ public class TweetController {
             @RequestPart(name = "poll", required = false) PollDto poll,
             Principal principal) throws IllegalStateException, IOException, SAXException, TikaException {
         return tweetService.addTweet(tweet, media, poll, principal.getName());
+    }
+
+    @GetMapping("/{id}")
+    public TweetDto getTweet(@PathVariable Long id) {
+        return tweetService.getTweet(id);
     }
 }
