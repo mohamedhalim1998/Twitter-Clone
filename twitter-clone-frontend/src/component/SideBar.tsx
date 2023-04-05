@@ -10,7 +10,7 @@ import {
   ProfileIcon,
 } from "./Icons";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch } from "../store/hooks";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { logout } from "../store/AuthReducer";
 import DropDownMenu, { MenuItemParam } from "./DropDownMenu";
 import { stat } from "fs";
@@ -19,11 +19,18 @@ import { TweetDialog } from "./TweetDialog";
 import { postTweet } from "../store/TweetReducer";
 import moment from "moment";
 import { TweetFormParams } from "./TweetForm";
+import { ProfileState } from "../store/ProfileReducer";
+import { RootState } from "../store/Store";
+import Profile from "../model/Profile";
 
 export function SideBar() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const profile: ProfileState = useAppSelector(
+    (state: RootState) => state.profile
+  );
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.keyCode === 27) {
@@ -37,6 +44,9 @@ export function SideBar() {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
+  if (profile.loading || profile.profile == undefined) {
+    return <div>loading</div>;
+  }
   return (
     <div className="flex flex-col my-5 w-full gap-3">
       <Logo />
@@ -49,7 +59,11 @@ export function SideBar() {
       />
       <SideBarItem name="Message" url="/messages" icon={MessageIcon()} />
       <SideBarItem name="Bookmarks" url="/bookmarks" icon={BookmarkIcon()} />
-      <SideBarItem name="Profile" url="/mohamedhalim98" icon={ProfileIcon()} />
+      <SideBarItem
+        name="Profile"
+        url={"/".concat(profile.profile?.username)}
+        icon={ProfileIcon()}
+      />
       <TweetButton
         onClick={() => {
           setDialogOpen(true);
@@ -80,7 +94,9 @@ export function SideBar() {
         }}
       />
       <ProfileMenu
+        profile={profile.profile}
         logout={() => {
+          console.log("loging out");
           dispatch(logout());
           navigate("/login");
         }}
@@ -102,27 +118,36 @@ export const TweetButton: React.FC<React.HTMLProps<HTMLDivElement>> = (
   );
 };
 
-const Profile = () => {
+const ProfilePanal = (profile: Profile) => {
   return (
     <div className="flex flex-row gap-2 p-3 hover:bg-gray-300 cursor-pointer rounded-4xl ">
       <div
         className="rounded-full bg-center w-10 h-10 bg-cover"
         style={{
-          backgroundImage: ` url(https://pbs.twimg.com/profile_images/772538396682092545/OmC7OaLV_400x400.jpg)`,
+          backgroundImage: ` url(${profile.profileImageUrl})`,
         }}
       />
       <div className="flex flex-col ">
-        <h4 className="font-semibold text-sm text-gray-800">Mohamed Halim</h4>
-        <h5 className="text-sm text-gray-500">@mohamedhalim98</h5>
+        <h4 className="font-semibold text-sm text-gray-800">
+          {profile.fullname}
+        </h4>
+        <h5 className="text-sm text-gray-500">@{profile.username}</h5>
       </div>
       <MoreIconWithoutCircle />
     </div>
   );
 };
 
-function ProfileMenu(props: { logout: () => void }) {
-  const items: MenuItemParam[] = [{ name: "logout", onClick: logout }];
-  return <DropDownMenu source={Profile()} items={items} />;
+function ProfileMenu(props: { logout: () => void; profile: Profile }) {
+  const items: MenuItemParam[] = [
+    {
+      name: "logout",
+      onClick: () => {
+        props.logout();
+      },
+    },
+  ];
+  return <DropDownMenu source={ProfilePanal(props.profile)} items={items} />;
 }
 
 export default SideBar;
