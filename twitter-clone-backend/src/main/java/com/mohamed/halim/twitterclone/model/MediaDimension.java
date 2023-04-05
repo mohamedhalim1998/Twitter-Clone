@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MediaDimention {
+public class MediaDimension {
     private int height;
     private int width;
 

@@ -26,5 +26,5 @@ public class Media {
     private String url;
     private Long duration;
     @Embedded
-    private MediaDimention dimentions;
+    private MediaDimension dimentions;
 }
