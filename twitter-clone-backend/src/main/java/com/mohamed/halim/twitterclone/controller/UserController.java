@@ -27,7 +27,8 @@ public class UserController {
     @PostMapping("/follow/{username}")
     public void followUser(Principal principal, @PathVariable String username) {
         profileService.follow(principal.getName(), username);
-    }   
+    }
+
     @PostMapping("/unfollow/{username}")
     public void unfollowUser(Principal principal, @PathVariable String username) {
         profileService.unfollow(principal.getName(), username);
@@ -36,5 +37,10 @@ public class UserController {
     @GetMapping("/{username}")
     public ProfileDto getProfile(@PathVariable String username) {
         return profileService.getProfile(username);
+    }
+
+    @GetMapping("/logged")
+    public ProfileDto getLoggedInProfile(Principal principal) {
+        return profileService.getProfile(principal.getName());
     }
 }
