@@ -45,6 +45,7 @@ public class SecurityConfig {
                     auth
                             .requestMatchers("/api/v1/auth/**").permitAll()
                             .requestMatchers("/h2-console/**").permitAll()
+                            .requestMatchers("/api/v1/media/**").permitAll()
                             .anyRequest().permitAll();
                 }).headers(headers -> headers.frameOptions().disable())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
