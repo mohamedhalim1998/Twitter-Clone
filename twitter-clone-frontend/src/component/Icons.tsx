@@ -109,7 +109,7 @@ export function Globe() {
     </svg>
   );
 }
-export const PhotoIcon = (props: React.SVGProps<SVGSVGElement>) => {
+export function PhotoIcon(props: SVGAttributes<SVGElement>) {
   return (
     <svg
       fill="none"
@@ -127,7 +127,7 @@ export const PhotoIcon = (props: React.SVGProps<SVGSVGElement>) => {
       />
     </svg>
   );
-};
+}
 export const PollIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
     <svg
