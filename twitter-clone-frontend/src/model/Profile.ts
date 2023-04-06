@@ -8,7 +8,7 @@ export default interface Profile {
   bio?: string;
   location?: string;
   pinnedTweetId?: number;
-  profileImageUrl?: string;
+  profileImageUrl: string;
   coverImageUrl?: string;
   profileProtected: boolean;
   followers: number;
