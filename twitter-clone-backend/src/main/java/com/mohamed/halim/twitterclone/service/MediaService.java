@@ -41,7 +41,7 @@ public class MediaService {
         File file = saveMediaFile(mediaFile);
         MediaType type = getFileType(file);
 
-        Media media = Media.builder().url("http://127.0.0.1:8080/api/v1/media/" + file.getName())
+        Media media = Media.builder().url(convertToUrl(file))
                 .type(type)
                 .dimentions(getFileDimentions(file, type))
                 .duration(getDuration(file, type))
@@ -94,7 +94,12 @@ public class MediaService {
                 Integer.parseInt(metadata.get(TIFF.IMAGE_WIDTH)));
     }
 
-    private File saveMediaFile(MultipartFile media) throws IllegalStateException, IOException {
+    public String convertToUrl(File file) {
+        return "http://127.0.0.1:8080/api/v1/media/" + file.getName();
+    }
+
+
+    public File saveMediaFile(MultipartFile media) throws IllegalStateException, IOException {
         String name = String.format("%s.%s",
                 UUID.randomUUID().toString(),
                 Files.getFileExtension(media.getOriginalFilename()));
