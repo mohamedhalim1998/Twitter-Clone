@@ -1,13 +1,18 @@
 package com.mohamed.halim.twitterclone.controller;
 
+import java.io.IOException;
 import java.security.Principal;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.mohamed.halim.twitterclone.model.ProfileInfo;
 import com.mohamed.halim.twitterclone.model.dto.ProfileDto;
 import com.mohamed.halim.twitterclone.service.ProfileService;
 
@@ -43,4 +48,13 @@ public class UserController {
     public ProfileDto getLoggedInProfile(Principal principal) {
         return profileService.getProfile(principal.getName());
     }
+
+    @PatchMapping
+    public ProfileDto updateProfile(Principal principal,
+            @RequestPart("profile_info") ProfileInfo profileInfo,
+            @RequestPart(name = "profile_img", required = false) MultipartFile profileImage,
+            @RequestPart(name = "cover_img", required = false) MultipartFile coverImage) throws IllegalStateException, IOException {
+        return profileService.updateProfile(principal.getName(), profileInfo, profileImage, coverImage);
+    }
+
 }

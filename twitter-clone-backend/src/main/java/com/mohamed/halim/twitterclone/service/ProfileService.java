@@ -1,13 +1,16 @@
 package com.mohamed.halim.twitterclone.service;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.mohamed.halim.twitterclone.model.Block;
 import com.mohamed.halim.twitterclone.model.Profile;
+import com.mohamed.halim.twitterclone.model.ProfileInfo;
 import com.mohamed.halim.twitterclone.model.dto.AuthResponse;
 import com.mohamed.halim.twitterclone.model.dto.LoginDto;
 import com.mohamed.halim.twitterclone.model.dto.ProfileDto;
@@ -28,6 +31,7 @@ public class ProfileService {
     private FollowService followService;
     private TweetRepository tweetRepository;
     private BlockRepository blockRepository;
+    private MediaService mediaService;
 
     public AuthResponse registerUser(RegisterDto dto) {
         if (profileRepository.findByEmail(dto.getEmail()).isPresent()) {
@@ -101,6 +105,22 @@ public class ProfileService {
 
     public ProfileDto getProfile(String username) {
         return profileRepository.findByUsername(username).map(this::mapToDto).get();
+    }
+
+    public ProfileDto updateProfile(String username, ProfileInfo profileInfo, MultipartFile profileImage,
+            MultipartFile coverImage) throws IllegalStateException, IOException {
+        Profile profile = profileRepository.findById(username).get();
+        profile.setFullname(profileInfo.getName());
+        profile.setBio(profileInfo.getBio());
+        profile.setLocation(profileInfo.getLocation());
+        if (profileImage != null) {
+            profile.setProfileImageUrl(mediaService.convertToUrl(mediaService.saveMediaFile(profileImage)));
+        }
+        if (coverImage != null) {
+            profile.setCoverImageUrl(mediaService.convertToUrl(mediaService.saveMediaFile(coverImage)));
+        }
+        return mapToDto(profileRepository.save(profile));
+
     }
 
 }
