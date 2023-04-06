@@ -19,7 +19,11 @@ import { TweetDialog } from "./TweetDialog";
 import { postTweet } from "../store/TweetReducer";
 import moment from "moment";
 import { TweetFormParams } from "./TweetForm";
-import { ProfileState } from "../store/ProfileReducer";
+import {
+  loadProfile,
+  ProfileState,
+  updateProfileLoading,
+} from "../store/ProfileReducer";
 import { RootState } from "../store/Store";
 import Profile from "../model/Profile";
 
@@ -30,7 +34,12 @@ export function SideBar() {
   const profile: ProfileState = useAppSelector(
     (state: RootState) => state.profile
   );
-
+  useEffect(() => {
+    if (!profile.loading && profile.profile == undefined) {
+      dispatch(updateProfileLoading(true));
+      dispatch(loadProfile());
+    }
+  }, []);
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.keyCode === 27) {
