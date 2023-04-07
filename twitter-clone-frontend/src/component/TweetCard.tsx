@@ -82,12 +82,19 @@ export const TweetCard = ({
             </div>
           </div>
           <p className="text-base text-gray-700">{tweet?.text}</p>
-          {tweet?.attachment?.type == "IMAGE" && (
-            <img
-              className="rounded-lg w-full max-h-96 mx-auto object-cover object-center"
-              src={tweet.includes?.media[0].url}
-            />
-          )}
+          {tweet?.attachment?.type == "MEDIA" &&
+            (tweet.includes?.media[0].type == "IMAGE" ? (
+              <img
+                className="rounded-lg w-full max-h-96 mx-auto object-cover object-center"
+                src={tweet.includes?.media[0].url}
+              />
+            ) : (
+              <video
+                className="object-cover w-auto max-h-96 mx-auto "
+                controls
+                src={tweet.includes?.media[0].url}
+              ></video>
+            ))}
 
           <TweetActionBar tweet={tweet} />
         </div>
