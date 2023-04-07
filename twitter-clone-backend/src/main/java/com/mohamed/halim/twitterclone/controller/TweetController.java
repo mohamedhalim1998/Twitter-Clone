@@ -43,4 +43,9 @@ public class TweetController {
     public List<TweetDto> getUserFeed(Principal principal) {
         return tweetService.getUserFeed(principal.getName());
     }
+
+    @GetMapping("/user/{username}")
+    public List<TweetDto> getUserTweets(@PathVariable String username) {
+        return tweetService.getUserTweets(username);
+    }
 }

@@ -15,6 +15,7 @@ import com.mohamed.halim.twitterclone.model.dto.AuthResponse;
 import com.mohamed.halim.twitterclone.model.dto.LoginDto;
 import com.mohamed.halim.twitterclone.model.dto.ProfileDto;
 import com.mohamed.halim.twitterclone.model.dto.RegisterDto;
+import com.mohamed.halim.twitterclone.model.dto.TweetDto;
 import com.mohamed.halim.twitterclone.repository.BlockRepository;
 import com.mohamed.halim.twitterclone.repository.ProfileRepository;
 import com.mohamed.halim.twitterclone.repository.TweetRepository;
@@ -121,6 +122,10 @@ public class ProfileService {
         }
         return mapToDto(profileRepository.save(profile));
 
+    }
+
+    public List<TweetDto> getUserTweets(String name) {
+        return null;
     }
 
 }

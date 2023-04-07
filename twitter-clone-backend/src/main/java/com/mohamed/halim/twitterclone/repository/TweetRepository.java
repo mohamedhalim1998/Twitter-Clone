@@ -19,4 +19,6 @@ public interface TweetRepository extends JpaRepository<Tweet, Long> {
 
     List<Tweet> findAllByAuthorIdInOrderByCreatedDateDesc(List<String> following, PageRequest of);
 
+    List<Tweet> findAllByAuthorIdOrderByCreatedDateDesc(String username, PageRequest of);
+
 }

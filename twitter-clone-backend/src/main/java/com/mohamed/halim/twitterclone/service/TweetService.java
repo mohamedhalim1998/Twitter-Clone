@@ -102,7 +102,13 @@ public class TweetService {
         log.info(following.toString());
         following.add(username);
         log.info(following.toString());
-        return tweetRepository.findAllByAuthorIdInOrderByCreatedDateDesc(following, PageRequest.of(0, 50)).stream().map(t -> convertToDto(t, true)).toList();
+        return tweetRepository.findAllByAuthorIdInOrderByCreatedDateDesc(following, PageRequest.of(0, 50)).stream()
+                .map(t -> convertToDto(t, true)).toList();
+    }
+
+    public List<TweetDto> getUserTweets(String username) {
+        return tweetRepository.findAllByAuthorIdOrderByCreatedDateDesc(username, PageRequest.of(0, 50)).stream()
+                .map(t -> convertToDto(t, true)).toList();
     }
 
 }
