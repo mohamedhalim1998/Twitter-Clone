@@ -20,7 +20,7 @@ interface Attachment {
   attachmentId: number;
 }
 
-type AttachmentType = "IMAGE" | "POLL" | "VIDEO"
+type AttachmentType = "MEDIA" | "POLL"
 interface TweetRefrence {
   refType: TweetReferenceType;
   refId: number;
