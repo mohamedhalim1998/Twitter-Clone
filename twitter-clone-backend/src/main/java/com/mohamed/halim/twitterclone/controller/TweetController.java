@@ -2,7 +2,7 @@ package com.mohamed.halim.twitterclone.controller;
 
 import java.io.IOException;
 import java.security.Principal;
-
+import java.util.List;
 
 import org.apache.tika.exception.TikaException;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,5 +37,10 @@ public class TweetController {
     @GetMapping("/{id}")
     public TweetDto getTweet(@PathVariable Long id) {
         return tweetService.getTweet(id);
+    }
+
+    @GetMapping("/feed")
+    public List<TweetDto> getUserFeed(Principal principal) {
+        return tweetService.getUserFeed(principal.getName());
     }
 }

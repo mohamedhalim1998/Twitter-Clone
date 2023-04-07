@@ -19,9 +19,11 @@ import com.mohamed.halim.twitterclone.model.dto.TweetDto;
 import com.mohamed.halim.twitterclone.repository.TweetRepository;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class TweetService {
     private TweetRepository tweetRepository;
     private MediaService mediaService;
@@ -29,6 +31,7 @@ public class TweetService {
     private LikeService likeService;
     private RetweetService retweetService;
     private ProfileService profileService;
+    private FollowService followService;
 
     public TweetDto addTweet(TweetDto dto, MultipartFile media, PollDto poll, String username)
             throws IllegalStateException, IOException, SAXException, TikaException {
@@ -92,6 +95,14 @@ public class TweetService {
             builder.addTweet(refTweet).addUser(profileService.getProfile(refTweet.getAuthorId()));
         }
         return builder.build();
+    }
+
+    public List<TweetDto> getUserFeed(String username) {
+        List<String> following = followService.getUserFollowingNames(username);
+        log.info(following.toString());
+        following.add(username);
+        log.info(following.toString());
+        return tweetRepository.findAllByAuthorIdInOrderByCreatedDateDesc(following, PageRequest.of(0, 50)).stream().map(t -> convertToDto(t, true)).toList();
     }
 
 }

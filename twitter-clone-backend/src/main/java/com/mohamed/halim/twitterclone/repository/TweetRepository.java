@@ -14,5 +14,9 @@ public interface TweetRepository extends JpaRepository<Tweet, Long> {
     int countByConversationId(Long id);
 
     int countByAuthorId(String username);
+    
+
+
+    List<Tweet> findAllByAuthorIdInOrderByCreatedDateDesc(List<String> following, PageRequest of);
 
 }

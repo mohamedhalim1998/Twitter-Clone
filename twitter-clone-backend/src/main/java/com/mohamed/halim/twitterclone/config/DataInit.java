@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.mohamed.halim.twitterclone.model.Attachment;
 import com.mohamed.halim.twitterclone.model.AttachmentType;
+import com.mohamed.halim.twitterclone.model.Follow;
 import com.mohamed.halim.twitterclone.model.Media;
 import com.mohamed.halim.twitterclone.model.MediaDimension;
 import com.mohamed.halim.twitterclone.model.MediaType;
@@ -16,6 +17,7 @@ import com.mohamed.halim.twitterclone.model.Profile;
 import com.mohamed.halim.twitterclone.model.Tweet;
 import com.mohamed.halim.twitterclone.model.TweetRefrence;
 import com.mohamed.halim.twitterclone.model.TweetRefrenceType;
+import com.mohamed.halim.twitterclone.repository.FollowRepository;
 import com.mohamed.halim.twitterclone.repository.MediaRepository;
 import com.mohamed.halim.twitterclone.repository.ProfileRepository;
 import com.mohamed.halim.twitterclone.repository.TweetRepository;
@@ -29,6 +31,7 @@ public class DataInit implements CommandLineRunner {
     private ProfileRepository profileRepository;
     private TweetRepository tweetRepository;
     private MediaRepository mediaRepository;
+    private FollowRepository followRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -40,8 +43,8 @@ public class DataInit implements CommandLineRunner {
                 .email("a@a.com")
                 .createdAt(new Date())
                 .password(encoder.encode("123"))
-                .build();      
-                  Profile profile2 = Profile.builder().username("user2")
+                .build();
+        Profile profile2 = Profile.builder().username("user2")
                 .fullname("You-Know-Who")
                 .profileImageUrl("http://localhost:8080/api/v1/media/default_profile.png")
                 .coverImageUrl("http://localhost:8080/api/v1/media/default_cover.jpg")
@@ -57,8 +60,14 @@ public class DataInit implements CommandLineRunner {
         profileRepository.save(profile);
         profileRepository.save(profile2);
         for (int i = 0; i < 100; i++) {
-            tweetRepository.save(Tweet.builder().text("Tweet from user1 id: " + i).createdDate(LocalDateTime.now())
+            tweetRepository.save(Tweet.builder().text("Tweet from user1 id: " + i)
+                    .createdDate(LocalDateTime.now())
                     .authorId("user1").build());
+        }
+        for (int i = 0; i < 100; i++) {
+            tweetRepository.save(Tweet.builder().text("Tweet from user2 id: " + i)
+                    .createdDate(LocalDateTime.now())
+                    .authorId("user2").build());
         }
 
         Media media = mediaRepository.save(
@@ -67,13 +76,17 @@ public class DataInit implements CommandLineRunner {
                         .type(MediaType.IMAGE)
                         .dimentions(new MediaDimension(1920, 1080))
                         .build());
-        tweetRepository.save(Tweet.builder().text("Tweet from user1 with media").createdDate(LocalDateTime.now())
-                .attachment(new Attachment(AttachmentType.MEDIA, media.getId()))
-                .authorId("user1").build());
-        tweetRepository.save(Tweet.builder().text("Tweet from user1 with media and is retweet").createdDate(LocalDateTime.now())
+        tweetRepository.save(
+                Tweet.builder().text("Tweet from user1 with media").createdDate(LocalDateTime.now())
+                        .attachment(new Attachment(AttachmentType.MEDIA, media.getId()))
+                        .authorId("user1").build());
+        tweetRepository.save(Tweet.builder().text("Tweet from user1 with media and is retweet")
+                .createdDate(LocalDateTime.now())
                 .attachment(new Attachment(AttachmentType.MEDIA, media.getId()))
                 .tweetRefrence(new TweetRefrence(TweetRefrenceType.RETWEET, 1L))
                 .authorId("user2").build());
+
+                followRepository.save(new Follow(null, "user2", "user1"));
 
     }
 

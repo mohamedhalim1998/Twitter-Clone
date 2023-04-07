@@ -1,5 +1,7 @@
 package com.mohamed.halim.twitterclone.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 
@@ -15,5 +17,7 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
     @Modifying
     @Transactional
     void deleteByFollowerAndFollowing(String follower, String following);
+
+    List<Follow> findAllByFollower(String follower);
 
 }
