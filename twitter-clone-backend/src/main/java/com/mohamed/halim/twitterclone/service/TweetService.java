@@ -3,6 +3,7 @@ package com.mohamed.halim.twitterclone.service;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.tika.exception.TikaException;
 import org.springframework.data.domain.PageRequest;
@@ -82,19 +83,34 @@ public class TweetService {
 
     private Includes getIncudes(Tweet tweet) {
         Includes.Builder builder = new Includes.Builder();
+        builder.addUser(profileService.getProfile(tweet.getAuthorId()));
+        addMediaToIncludes(tweet, builder);
+        addPollToIncludes(tweet, builder);
+        addRefTweetToIncludes(tweet, builder);
+        return builder.build();
+    }
+
+    private void addRefTweetToIncludes(Tweet tweet, Includes.Builder builder) {
+        if (tweet.getTweetRefrence() != null) {
+            Optional<Tweet> refTweet = tweetRepository.findById(tweet.getTweetRefrence().getRefId());
+            addMediaToIncludes(refTweet.get(), builder);
+            addPollToIncludes(refTweet.get(), builder);
+            builder.addTweet(refTweet.map(this::convertToDto).get())
+                    .addUser(profileService.getProfile(refTweet.get().getAuthorId()));
+
+        }
+    }
+
+    private void addMediaToIncludes(Tweet tweet, Includes.Builder builder) {
         if (tweet.getAttachment() != null && tweet.getAttachment().getType() == AttachmentType.MEDIA) {
             builder.addMedia(mediaService.getMedia(tweet.getAttachment().getAttacmentId()));
         }
+    }
+
+    private void addPollToIncludes(Tweet tweet, Includes.Builder builder) {
         if (tweet.getAttachment() != null && tweet.getAttachment().getType() == AttachmentType.POLL) {
             builder.addPoll(pollService.getPoll(tweet.getAttachment().getAttacmentId()));
         }
-        builder.addUser(profileService.getProfile(tweet.getAuthorId()));
-        if (tweet.getTweetRefrence() != null) {
-            TweetDto refTweet = tweetRepository.findById(tweet.getTweetRefrence().getRefId()).map(this::convertToDto)
-                    .get();
-            builder.addTweet(refTweet).addUser(profileService.getProfile(refTweet.getAuthorId()));
-        }
-        return builder.build();
     }
 
     public List<TweetDto> getUserFeed(String username) {
