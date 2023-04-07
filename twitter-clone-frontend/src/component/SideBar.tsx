@@ -57,59 +57,61 @@ export function SideBar() {
     return <div>loading</div>;
   }
   return (
-    <div className="flex flex-col my-5 w-full gap-3">
-      <Logo />
-      <SideBarItem name="Home" url="/" icon={HomeIcon()} selected />
-      <SideBarItem name="Explore" url="/explore" icon={ExploreIcon()} />
-      <SideBarItem
-        name="Notification"
-        url="/notifications"
-        icon={NotificationIcon()}
-      />
-      <SideBarItem name="Message" url="/messages" icon={MessageIcon()} />
-      <SideBarItem name="Bookmarks" url="/bookmarks" icon={BookmarkIcon()} />
-      <SideBarItem
-        name="Profile"
-        url={"/".concat(profile.profile?.username)}
-        icon={ProfileIcon()}
-      />
-      <TweetButton
-        onClick={() => {
-          setDialogOpen(true);
-        }}
-      />
-      <TweetDialog
-        isOpen={dialogOpen}
-        onClose={() => {
-          setDialogOpen(false);
-        }}
-        onSubmit={(data: TweetFormParams) => {
-          dispatch(
-            postTweet(
-              data.text,
-              data.isPoll
-                ? {
-                    options: data.pollOptions,
-                    duration: moment()
-                      .day(data.pollLengthDays!!)
-                      .hour(data.pollLengthHours!!)
-                      .minute(data.pollLengthMinute!!)
-                      .valueOf(),
-                  }
-                : undefined,
-              data.hasMedia ? data.media : undefined
-            )
-          );
-        }}
-      />
-      <ProfileMenu
-        profile={profile.profile}
-        logout={() => {
-          console.log("loging out");
-          dispatch(logout());
-          navigate("/login");
-        }}
-      />
+    <div className="fixed">
+      <div className="flex flex-col my-5 w-full gap-3">
+        <Logo />
+        <SideBarItem name="Home" url="/" icon={HomeIcon()} selected />
+        <SideBarItem name="Explore" url="/explore" icon={ExploreIcon()} />
+        <SideBarItem
+          name="Notification"
+          url="/notifications"
+          icon={NotificationIcon()}
+        />
+        <SideBarItem name="Message" url="/messages" icon={MessageIcon()} />
+        <SideBarItem name="Bookmarks" url="/bookmarks" icon={BookmarkIcon()} />
+        <SideBarItem
+          name="Profile"
+          url={"/".concat(profile.profile?.username)}
+          icon={ProfileIcon()}
+        />
+        <TweetButton
+          onClick={() => {
+            setDialogOpen(true);
+          }}
+        />
+        <TweetDialog
+          isOpen={dialogOpen}
+          onClose={() => {
+            setDialogOpen(false);
+          }}
+          onSubmit={(data: TweetFormParams) => {
+            dispatch(
+              postTweet(
+                data.text,
+                data.isPoll
+                  ? {
+                      options: data.pollOptions,
+                      duration: moment()
+                        .day(data.pollLengthDays!!)
+                        .hour(data.pollLengthHours!!)
+                        .minute(data.pollLengthMinute!!)
+                        .valueOf(),
+                    }
+                  : undefined,
+                data.hasMedia ? data.media : undefined
+              )
+            );
+          }}
+        />
+        <ProfileMenu
+          profile={profile.profile}
+          logout={() => {
+            console.log("loging out");
+            dispatch(logout());
+            navigate("/login");
+          }}
+        />
+      </div>
     </div>
   );
 }
