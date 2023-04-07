@@ -86,7 +86,13 @@ public class DataInit implements CommandLineRunner {
                 .tweetRefrence(new TweetRefrence(TweetRefrenceType.RETWEET, 1L))
                 .authorId("user2").build());
 
-                followRepository.save(new Follow(null, "user2", "user1"));
+        followRepository.save(new Follow(null, "user2", "user1"));
+        tweetRepository.save(Tweet.builder().text("this a replay to user1")
+                .createdDate(LocalDateTime.now())
+                .tweetRefrence(new TweetRefrence(TweetRefrenceType.REPLAY, 1L))
+                .authorId("user2").build());
+
+        followRepository.save(new Follow(null, "user2", "user1"));
 
     }
 
