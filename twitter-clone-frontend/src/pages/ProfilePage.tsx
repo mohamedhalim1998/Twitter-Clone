@@ -14,6 +14,7 @@ import { RootState } from "../store/Store";
 import { TweetNavBar } from "../component/TweetNavBar";
 import { useEffect } from "react";
 import { ProfileInfo } from "./ProfileInfo";
+import { FeedState, getUserTweets, updateFeedLoading } from "../store/FeedReducer";
 
 function ProfilePage() {
   const { username } = useParams();
@@ -25,6 +26,8 @@ function ProfilePage() {
     profileState.profile?.username == username
       ? profileState.profile
       : profileState.guestProfile;
+  const feed: FeedState = useAppSelector((state: RootState) => state.feed);
+
   useEffect(() => {
     if (!profileState.loading && profile == undefined) {
       dispatch(updateProfileLoading(true));
@@ -37,6 +40,13 @@ function ProfilePage() {
       dispatch(getPinnedTweet(profile.pinnedTweetId));
     }
   }, [profile]);
+
+  useEffect(() => {
+    if (!feed.loading && feed.tweets.length === 0) {
+      dispatch(updateFeedLoading(true));
+      dispatch(getUserTweets(username!));
+    }
+  }, []);
   if (profileState.loading || profile == undefined) {
     return <div>loading</div>;
   }
@@ -54,6 +64,9 @@ function ProfilePage() {
         />
         {TweetNavBar()}
         <TweetCard tweet={profileState.pinnedTweet} pinned />
+        {feed.tweets.map((tweet, i) => {
+          return <TweetCard tweet={tweet} key={i} />;
+        })}
       </div>
       <div className="col-span-3">
         <RightBar />

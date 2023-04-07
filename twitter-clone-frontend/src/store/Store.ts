@@ -1,12 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import apiMiddleware from "./ApiMiddleware";
 import AuthReducer from "./AuthReducer";
+import FeedReducer from "./FeedReducer";
 import ProfileReducer from "./ProfileReducer";
 
 export const store = configureStore({
   reducer: {
     auth: AuthReducer,
-    profile: ProfileReducer
+    profile: ProfileReducer,
+    feed: FeedReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -7,12 +7,27 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { postTweet } from "../store/TweetReducer";
 import { TweetCard } from "../component/TweetCard";
 import { Divider } from "../component/Divider";
-import { loadProfile, ProfileState, updateProfileLoading } from "../store/ProfileReducer";
+import {
+  loadProfile,
+  ProfileState,
+  updateProfileLoading,
+} from "../store/ProfileReducer";
 import { RootState } from "../store/Store";
+import {
+  FeedState,
+  getUserFeed,
+  updateFeedLoading,
+} from "../store/FeedReducer";
 
 function Home() {
   const dispatch = useAppDispatch();
-
+  const feed: FeedState = useAppSelector((state: RootState) => state.feed);
+  useEffect(() => {
+    if (!feed.loading && feed.tweets.length === 0) {
+      dispatch(updateFeedLoading(true));
+      dispatch(getUserFeed());
+    }
+  }, []);
 
   return (
     <div className="w-7/10 mx-auto grid grid-cols-11">
@@ -42,6 +57,9 @@ function Home() {
             );
           }}
         />
+        {feed.tweets.map((tweet, i) => {
+          return <TweetCard tweet={tweet} key={i} />;
+        })}
       </div>
       <div className="col-span-3">
         <RightBar />
