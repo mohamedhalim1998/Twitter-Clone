@@ -1,9 +1,11 @@
 export default interface MediaDto {
     id: number;
-    type: string;
+    type: "IMAGE"|"VIDEO";
     url: string;
     duration: number;
     height: number;
     width: number;
   }
+
+
   
