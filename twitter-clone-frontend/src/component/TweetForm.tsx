@@ -133,6 +133,11 @@ function TweetForm(props: { onSubmit: (date: TweetFormParams) => void }) {
           className="w-fit ml-auto text-white bg-theme hover:bg-blue-400 rounded-3xl px-6 py-2 cursor-pointer"
           onClick={() => {
             props.onSubmit(state);
+            setState({
+              text: "",
+              isPoll: false,
+              hasMedia: false,
+            });
           }}
         />
       </div>
