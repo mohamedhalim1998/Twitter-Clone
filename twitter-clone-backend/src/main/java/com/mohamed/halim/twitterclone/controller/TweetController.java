@@ -48,4 +48,26 @@ public class TweetController {
     public List<TweetDto> getUserTweets(@PathVariable String username) {
         return tweetService.getUserTweets(username);
     }
+
+    @PostMapping("/retweet/{id}")
+    public TweetDto retweet(@PathVariable Long id, Principal principal) {
+        return tweetService.retweet(id, principal.getName());
+
+    }
+
+    @PostMapping("replay/{id}")
+    public TweetDto replayToTweet(
+            @PathVariable Long id,
+            @RequestPart(name = "tweet", required = true) TweetDto tweet,
+            @RequestPart(name = "media", required = false) MultipartFile media,
+            Principal principal) throws IllegalStateException, IOException, SAXException, TikaException {
+        return tweetService.replayToTweet(id, tweet, media, principal.getName());
+    }
+
+    @PostMapping("like/{if}")
+    public void likeTweet(
+            @PathVariable Long id,
+            Principal principal) {
+        tweetService.likeTweet(id, principal.getName());
+    }
 }

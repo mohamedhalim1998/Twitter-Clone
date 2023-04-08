@@ -14,6 +14,8 @@ import org.xml.sax.SAXException;
 import com.mohamed.halim.twitterclone.model.Attachment;
 import com.mohamed.halim.twitterclone.model.AttachmentType;
 import com.mohamed.halim.twitterclone.model.Tweet;
+import com.mohamed.halim.twitterclone.model.TweetRefrence;
+import com.mohamed.halim.twitterclone.model.TweetRefrenceType;
 import com.mohamed.halim.twitterclone.model.dto.Includes;
 import com.mohamed.halim.twitterclone.model.dto.PollDto;
 import com.mohamed.halim.twitterclone.model.dto.TweetDto;
@@ -49,12 +51,11 @@ public class TweetService {
         Tweet tweet = Tweet.builder().text(dto.getText())
                 .authorId(username)
                 .attachment(attachment)
-                .conversationId(dto.getConversationId())
                 .createdDate(LocalDateTime.now())
                 .tweetRefrence(dto.getTweetRefrence())
                 .build();
 
-        return TweetDto.from(tweetRepository.save(tweet));
+        return convertToDto(tweetRepository.save(tweet), true);
     }
 
     public TweetDto getTweet(Long id) {
@@ -125,6 +126,42 @@ public class TweetService {
     public List<TweetDto> getUserTweets(String username) {
         return tweetRepository.findAllByAuthorIdOrderByCreatedDateDesc(username, PageRequest.of(0, 50)).stream()
                 .map(t -> convertToDto(t, true)).toList();
+    }
+
+    public TweetDto retweet(Long id, String name) {
+        Tweet tweet = tweetRepository.findById(id).get()
+                .toBuilder()
+                .id(null)
+                .tweetRefrence(new TweetRefrence(TweetRefrenceType.RETWEET, id))
+                .authorId(name)
+                .createdDate(LocalDateTime.now())
+                .build();
+
+        tweet = tweetRepository.save(tweet);
+        return convertToDto(tweet, true);
+    }
+
+    public TweetDto replayToTweet(Long id, TweetDto dto, MultipartFile media, String username)
+            throws IllegalStateException, IOException, SAXException, TikaException {
+        Attachment attachment = null;
+        log.info("media : " + media);
+        if (media != null) {
+            long mediaId = mediaService.saveMedia(media);
+            attachment = new Attachment(AttachmentType.MEDIA, mediaId);
+        }
+        Tweet tweet = Tweet.builder().text(dto.getText())
+                .authorId(username)
+                .attachment(attachment)
+                .conversationId(id)
+                .tweetRefrence(new TweetRefrence(TweetRefrenceType.REPLAY, id))
+                .createdDate(LocalDateTime.now())
+                .build();
+
+        return convertToDto(tweetRepository.save(tweet), true);
+    }
+
+    public void likeTweet(Long id, String username) {
+        likeService.likeTweet(id, username);
     }
 
 }
