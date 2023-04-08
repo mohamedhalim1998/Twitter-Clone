@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   BlockIcon,
@@ -16,6 +16,10 @@ import Tweet from "../model/Tweet";
 import Profile from "../model/Profile";
 import Media from "../model/Media";
 import moment from "moment";
+import { useAppDispatch } from "../store/hooks";
+import { likeTweet, replayTweet, reTweet } from "../store/TweetReducer";
+import ReplayDialog from "./ReplayDialog";
+import { TweetFormParams } from "./TweetForm";
 
 export const TweetCard = ({
   tweet,
@@ -36,7 +40,6 @@ export const TweetCard = ({
           profile={tweet.includes?.users[1]}
           showReplayLine
           media={tweet?.includes?.media[tweet?.includes?.media.length - 1]}
-          
         />
       )}
       <TweetInfo
@@ -48,26 +51,61 @@ export const TweetCard = ({
     </div>
   );
 };
-const TweetActionBar = ({ tweet }: { tweet?: Tweet }) => {
+const TweetActionBar = ({ tweet, profile }: { tweet?: Tweet, profile?: Profile }) => {
+  const dispatch = useAppDispatch();
+  const [showReplayDialog, setShowReplayDialog] = useState<boolean>(false);
   return (
     <div className="flex flex-row w-4/5 text-gray-500 py-2 justify-between">
       <div className="flex flex-row cursor-pointer ">
-        <ReplayIcon className="pr-2 w-6 hover:bg-gray-300 mx-auto px-auto rounded-full" />
+        <ReplayIcon
+          className="pr-2 w-6 hover:bg-gray-300 mx-auto px-auto rounded-full"
+          onClick={() => {
+            setShowReplayDialog(true);
+          }}
+        />
         <p className="text-sm">{tweet?.replays}</p>
       </div>
       <div className="flex flex-row cursor-pointer">
-        <RetweetIcon className="pr-2 w-6 text-gray-500 hover:bg-gray-300 mx-auto px-auto rounded-full" />
+        <RetweetIcon
+          className="pr-2 w-6 text-gray-500 hover:bg-gray-300 mx-auto px-auto rounded-full"
+          onClick={() => {
+            dispatch(reTweet(tweet?.id));
+          }}
+        />
         <p className="text-sm">{tweet?.retweet}</p>
       </div>
       <div className="flex flex-row cursor-pointer ">
-        <LikeIcon className="pr-2 w-6 hover:bg-gray-300 mx-auto px-auto rounded-full" />
+        <LikeIcon
+          className="pr-2 w-6 hover:bg-gray-300 mx-auto px-auto rounded-full"
+          onClick={() => {
+            dispatch(likeTweet(tweet?.id));
+          }}
+        />
         <p className="text-sm">{tweet?.likes}</p>
       </div>
+      <ReplayDialog
+        tweet={tweet}
+        profile={profile}
+        isOpen={showReplayDialog}
+        onClose={() => {
+          setShowReplayDialog(false);
+        }}
+        onSubmit={(data) => {
+          dispatch(
+            replayTweet(
+              tweet!.id,
+              data.text,
+              data.hasMedia ? data.media : undefined
+            )
+          );
+          setShowReplayDialog(false);
+        }}
+      />
     </div>
   );
 };
 
-const TweetInfo = ({
+export const TweetInfo = ({
   tweet,
   media,
   profile,
@@ -110,7 +148,7 @@ const TweetInfo = ({
             }}
           />
           {showReplayLine && (
-            <div className="w-0.5 flex-growp bg-gray-300 mx-auto"> </div>
+            <div className="w-0.5 flex-grow bg-gray-300 mx-auto"> </div>
           )}
         </div>
         <div className="flex flex-col w-full px-5 gap-2">
@@ -156,7 +194,7 @@ const TweetInfo = ({
               ></video>
             ))}
 
-          <TweetActionBar tweet={tweet} />
+          <TweetActionBar tweet={tweet} profile={profile} />
         </div>
       </div>
     </div>

@@ -6,6 +6,9 @@ import { MediaButton } from "./MediaButton";
 import { PollForm } from "./PollForm";
 import { TweetButton } from "./SideBar";
 import _ from "lodash";
+import { useAppSelector } from "../store/hooks";
+import { ProfileState } from "../store/ProfileReducer";
+import { RootState } from "../store/Store";
 export interface TweetFormParams {
   text: string;
   isPoll: boolean;
@@ -18,13 +21,18 @@ export interface TweetFormParams {
   mediaSrc?: string;
   mediaType?: string;
 }
-function TweetForm(props: { onSubmit: (date: TweetFormParams) => void }) {
+function TweetForm(props: {
+  onSubmit: (date: TweetFormParams) => void;
+  disablePoll?: boolean;
+}) {
   const [state, setState] = useState<TweetFormParams>({
     text: "",
     isPoll: false,
     hasMedia: false,
   });
-
+  const profile: ProfileState = useAppSelector(
+    (state: RootState) => state.profile
+  );
   return (
     <div className="px-6">
       {" "}
@@ -32,7 +40,7 @@ function TweetForm(props: { onSubmit: (date: TweetFormParams) => void }) {
         <div
           className="rounded-full bg-center w-12 h-12 bg-cover flex-shrink-0"
           style={{
-            backgroundImage: ` url(https://pbs.twimg.com/profile_images/772538396682092545/OmC7OaLV_400x400.jpg)`,
+            backgroundImage: ` url(${profile.profile?.profileImageUrl})`,
           }}
         />
         <div className="flex flex-col w-full">
@@ -52,7 +60,7 @@ function TweetForm(props: { onSubmit: (date: TweetFormParams) => void }) {
               state.isPoll ? "Ask a question ..." : "What's happening ?"
             }
           />
-          {state.isPoll && PollForm(state, setState)}
+          {!props.disablePoll && state.isPoll && PollForm(state, setState)}
           {state.hasMedia && (
             <div className="w-full  rounded-md my-4 overflow-hidden relative">
               <XMarkIcon
@@ -112,23 +120,25 @@ function TweetForm(props: { onSubmit: (date: TweetFormParams) => void }) {
             }
           }}
         />
-        <PollIcon
-          className={`w-5 cursor-pointer `.concat(
-            state.hasMedia ? "text-gray-500" : "text-theme"
-          )}
-          onClick={() => {
-            if (!state.hasMedia)
-              setState(
-                produce((state) => {
-                  state.isPoll = true;
-                  state.pollLengthDays = 1;
-                  state.pollLengthHours = 0;
-                  state.pollLengthMinute = 0;
-                  state.pollOptions = ["", "", "", ""];
-                })
-              );
-          }}
-        />
+        {!props.disablePoll && (
+          <PollIcon
+            className={`w-5 cursor-pointer `.concat(
+              state.hasMedia ? "text-gray-500" : "text-theme"
+            )}
+            onClick={() => {
+              if (!state.hasMedia)
+                setState(
+                  produce((state) => {
+                    state.isPoll = true;
+                    state.pollLengthDays = 1;
+                    state.pollLengthHours = 0;
+                    state.pollLengthMinute = 0;
+                    state.pollOptions = ["", "", "", ""];
+                  })
+                );
+            }}
+          />
+        )}
         <TweetButton
           className="w-fit ml-auto text-white bg-theme hover:bg-blue-400 rounded-3xl px-6 py-2 cursor-pointer"
           onClick={() => {
