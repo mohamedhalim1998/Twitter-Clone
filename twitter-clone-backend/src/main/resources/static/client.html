@@ -822,38 +822,38 @@
       stompClient.connect({}, function (frame) {
         console.log("Connected");
 
-        stompClient.subscribe("/message/user1", function (response) {
+        stompClient.subscribe("/notification/user1", function (response) {
           console.log("Received: " + response.body);
         });
 
         stompClient.send(
-          "/message",
+          "/notification",
           {},
-          '{"to": "user1","from": "user2","text": "this my first message for u"}'
+          '{"to": "user1","from": "user2","text": "this my first message for u","type": "REPLAY"}'
         );
       });
 
-      document.getElementById("form").addEventListener("submit", (e) => {
-        e.preventDefault();
-        const blob = new Blob(
-          [
-            '{"to": "user1","from": "user2","text": "this my first message for u"}',
-          ],
-          {
-            type: "application/json",
-          }
-        );
-        let file;
-        document.getElementById("file").addEventListener("change", (e) => {
-          file = e.target.files[0];
-        });
+      // document.getElementById("form").addEventListener("submit", (e) => {
+      //   e.preventDefault();
+      //   const blob = new Blob(
+      //     [
+      //       '{"to": "user1","from": "user2","text": "this my first message for u"}',
+      //     ],
+      //     {
+      //       type: "application/json",
+      //     }
+      //   );
+      //   let file;
+      //   document.getElementById("file").addEventListener("change", (e) => {
+      //     file = e.target.files[0];
+      //   });
 
-        const data = new FormData();
-        data.append("messaage", blob);
-        // data.append("media", file);
+      //   const data = new FormData();
+      //   data.append("messaage", blob);
+      //   // data.append("media", file);
         
-        stompClient.send("/message", {}, JSON.stringify(data));
-      });
+      //   stompClient.send("/notif", {}, JSON.stringify(data));
+      // });
     </script>
   </body>
 </html>
