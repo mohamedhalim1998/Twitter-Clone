@@ -40,7 +40,7 @@ public class TweetService {
             throws IllegalStateException, IOException, SAXException, TikaException {
         Attachment attachment = null;
         if (media != null) {
-            long mediaId = mediaService.saveMedia(media);
+            long mediaId = mediaService.saveMedia(media).getId();
             attachment = new Attachment(AttachmentType.MEDIA, mediaId);
         } else if (poll != null) {
             long pollId = pollService.addPoll(poll);
@@ -146,7 +146,7 @@ public class TweetService {
         Attachment attachment = null;
         log.info("media : " + media);
         if (media != null) {
-            long mediaId = mediaService.saveMedia(media);
+            long mediaId = mediaService.saveMedia(media).getId();
             attachment = new Attachment(AttachmentType.MEDIA, mediaId);
         }
         Tweet tweet = Tweet.builder().text(dto.getText())

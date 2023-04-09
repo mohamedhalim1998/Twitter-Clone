@@ -36,7 +36,7 @@ import lombok.AllArgsConstructor;
 public class MediaService {
     private MediaRepository mediaRepository;
 
-    public long saveMedia(MultipartFile mediaFile)
+    public MediaDto saveMedia(MultipartFile mediaFile)
             throws IllegalStateException, IOException, SAXException, TikaException {
         File file = saveMediaFile(mediaFile);
         MediaType type = getFileType(file);
@@ -47,7 +47,7 @@ public class MediaService {
                 .duration(getDuration(file, type))
                 .build();
 
-        return mediaRepository.save(media).getId();
+        return MediaDto.fromMedia(mediaRepository.save(media));
     }
 
     private Long getDuration(File file, MediaType type) throws IOException, SAXException, TikaException {
