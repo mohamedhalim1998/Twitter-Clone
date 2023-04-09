@@ -1,5 +1,8 @@
 package com.mohamed.halim.twitterclone.service;
 
+import java.util.List;
+
+import org.springframework.data.domain.PageRequest;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +22,14 @@ public class NotificationService {
         Notification notification = notificationRepository.save(dto.toNotification());
 
         messagingTemplate.convertAndSend("/notification/" + notification.getTo(), notification);
+    }
+
+    public List<NotificationDto> getUserNotificatoions(String username) {
+        return notificationRepository
+                .findAllByToOrderByTimeAsec(username, PageRequest.of(0, 30))
+                .stream()
+                .map(NotificationDto::fromEntity)
+                .toList();
     }
 
 }
