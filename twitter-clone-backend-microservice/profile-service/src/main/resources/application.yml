@@ -1,0 +1,19 @@
+server:
+  port: 8082
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+    username: root
+    password: root
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+    properties:
+      hibernate:
+        format-sql: true
+  application:
+    name: profile-service
+  rabbitmq:
+    username: guest
+    password: guest
