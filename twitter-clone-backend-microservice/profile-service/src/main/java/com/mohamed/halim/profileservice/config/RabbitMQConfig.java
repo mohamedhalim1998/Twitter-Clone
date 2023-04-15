@@ -27,7 +27,16 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    Binding binding(Queue queue, TopicExchange exchange) {
+    Binding bindRegisterQueue(Queue queue, TopicExchange exchange) {
     return BindingBuilder.bind(queue).to(exchange).with("register-user");
+    }    
+    @Bean
+    Queue loadProfileQueue() {
+        return new Queue("profile.load.profile");
+    }
+
+    @Bean
+    Binding bindLoadProfileQueue(Queue queue, TopicExchange exchange) {
+    return BindingBuilder.bind(queue).to(exchange).with("profile.load.profile");
     }
 }

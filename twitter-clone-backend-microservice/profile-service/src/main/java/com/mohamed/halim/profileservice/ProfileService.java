@@ -40,6 +40,11 @@ public class ProfileService {
         rabbit.send(props.getReplyTo(), converter.toMessage(buildAuthResponse(saved), props));
     }
 
+    @RabbitListener(queues = "profile.load.profile")
+    public Profile getProfile(String username) {
+        return profileRepository.findByUsername(username).get();
+    }
+
     private AuthResponse buildAuthResponse(Profile profile) {
         Message message = rabbit.sendAndReceive("jwt",
                 "jwt.token.generate",
