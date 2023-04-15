@@ -1,6 +1,5 @@
 package com.mohamed.halim.authservice;
 
-import java.io.IOException;
 
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -10,8 +9,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.exc.StreamReadException;
-import com.fasterxml.jackson.databind.DatabindException;
 import com.mohamed.halim.authservice.model.AuthResponse;
 import com.mohamed.halim.authservice.model.LoginDto;
 import com.mohamed.halim.authservice.model.PasswordValidation;
@@ -28,7 +25,7 @@ public class AuthService {
     private PasswordEncoder passwordEncoder;
     private Jackson2JsonMessageConverter converter;
 
-    public AuthResponse registerUser(RegisterDto dto) throws StreamReadException, DatabindException, IOException {
+    public AuthResponse registerUser(RegisterDto dto) {
         log.info(dto.toString());
         dto.setPassword(passwordEncoder.encode(dto.getPassword()));
         Message message = rabbit.sendAndReceive("profile", "profile.user.register", converter.toMessage(dto, null));
@@ -58,6 +55,14 @@ public class AuthService {
     public boolean validatePassword(PasswordValidation password) {
         return passwordEncoder.matches(password.getPassword(), password.getHash());
 
+    }
+
+    public void verifyToken(String token) {
+        Message message = rabbit.sendAndReceive("jwt", "jwt.token.verify", converter.toMessage(token, null));
+        String error = message.getMessageProperties().getHeader("error");
+        if (error != null) {
+            throw new RuntimeException(error);
+        }
     }
 
 }
