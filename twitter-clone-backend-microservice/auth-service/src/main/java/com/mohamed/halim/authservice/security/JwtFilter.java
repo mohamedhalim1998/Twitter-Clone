@@ -2,7 +2,9 @@ package com.mohamed.halim.authservice.security;
 
 import java.io.IOException;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,8 +22,8 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 @Configuration
 public class JwtFilter extends OncePerRequestFilter {
-    private JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final RabbitTemplate rabbit;
 
     @Override
     protected void doFilterInternal(
@@ -30,17 +32,18 @@ public class JwtFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain) throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
-        final String userEmail;
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
         jwt = authHeader.substring(7);
-        userEmail = jwtService.extractUsername(jwt);
+        String userEmail = rabbit.convertSendAndReceiveAsType(
+            "jwt", "jwt.token.extract.username", jwt, new ParameterizedTypeReference<String>(){});
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-
-            if (jwtService.isTokenValid(jwt, userDetails)) {
+            Boolean isTokenValid = rabbit.convertSendAndReceiveAsType(
+                "jwt", "jwt.token.validation", userDetails, new ParameterizedTypeReference<Boolean>(){});
+            if (isTokenValid) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,

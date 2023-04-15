@@ -36,6 +36,10 @@ public class RabbitMQConfig {
     Queue tokenValidatoinQueue() {
         return new Queue("jwt.token.validation");
     }
+    @Bean
+    Queue extractUsername() {
+        return new Queue("jwt.token.extract.username");
+    }
 
     @Bean
     Binding bindTokenGeneration(TopicExchange exchange) {
@@ -47,5 +51,9 @@ public class RabbitMQConfig {
     Binding bindTokenValidation(TopicExchange exchange) {
         return BindingBuilder
                 .bind(tokenGeneratQueue()).to(exchange).with("jwt.token.validation");
+    }   @Bean
+    Binding bindExtractUsername(TopicExchange exchange) {
+        return BindingBuilder
+                .bind(extractUsername()).to(exchange).with("jwt.token.extract-username");
     }
 }

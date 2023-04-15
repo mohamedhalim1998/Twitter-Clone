@@ -21,8 +21,9 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class JwtService {
 
-    private static final String SECRET_KEY = "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970";
+  private static final String SECRET_KEY = "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970";
 
+  @RabbitListener(queues = "jwt.token.extract.username")
   public String extractUsername(String token) {
     return extractClaim(token, Claims::getSubject);
   }
@@ -31,6 +32,7 @@ public class JwtService {
     final Claims claims = extractAllClaims(token);
     return claimsResolver.apply(claims);
   }
+
   @RabbitListener(queues = "jwt.token.generate")
   public String generateToken(@Payload User userDetails) {
     return generateToken(new HashMap<>(), userDetails);
@@ -38,8 +40,7 @@ public class JwtService {
 
   public String generateToken(
       Map<String, Object> extraClaims,
-      UserDetails userDetails
-  ) {
+      UserDetails userDetails) {
     return Jwts
         .builder()
         .setClaims(extraClaims)
@@ -49,6 +50,7 @@ public class JwtService {
         .signWith(getSignInKey(), SignatureAlgorithm.HS256)
         .compact();
   }
+
   @RabbitListener(queues = "jwt.token.validation")
   public boolean isTokenValid(String token, UserDetails userDetails) {
     final String username = extractUsername(token);
