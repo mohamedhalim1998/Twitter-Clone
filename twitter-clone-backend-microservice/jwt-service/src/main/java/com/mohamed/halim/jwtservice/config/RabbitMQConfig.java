@@ -17,7 +17,7 @@ public class RabbitMQConfig {
     @Bean
     public Jackson2JsonMessageConverter messageConverter() {
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        var converter =  new Jackson2JsonMessageConverter(mapper);
+        var converter = new Jackson2JsonMessageConverter(mapper);
         converter.setTypePrecedence(TypePrecedence.INFERRED);
         return converter;
     }
@@ -36,9 +36,15 @@ public class RabbitMQConfig {
     Queue tokenValidatoinQueue() {
         return new Queue("jwt.token.validation");
     }
+
     @Bean
     Queue extractUsername() {
         return new Queue("jwt.token.extract.username");
+    }
+
+    @Bean
+    Queue verifyTokenQueue() {
+        return new Queue("jwt.token.verify");
     }
 
     @Bean
@@ -51,9 +57,17 @@ public class RabbitMQConfig {
     Binding bindTokenValidation(TopicExchange exchange) {
         return BindingBuilder
                 .bind(tokenGeneratQueue()).to(exchange).with("jwt.token.validation");
-    }   @Bean
+    }
+
+    @Bean
     Binding bindExtractUsername(TopicExchange exchange) {
         return BindingBuilder
-                .bind(extractUsername()).to(exchange).with("jwt.token.extract-username");
+                .bind(extractUsername()).to(exchange).with("jwt.token.extract.username");
+    }
+
+    @Bean
+    Binding bindVerifyTokenQueue(TopicExchange exchange) {
+        return BindingBuilder
+                .bind(verifyTokenQueue()).to(exchange).with("jwt.token.verify");
     }
 }
