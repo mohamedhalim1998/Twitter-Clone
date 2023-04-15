@@ -3,6 +3,7 @@ package com.mohamed.halim.authservice;
 import java.io.IOException;
 
 import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.core.ParameterizedTypeReference;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.mohamed.halim.authservice.model.AuthResponse;
+import com.mohamed.halim.authservice.model.LoginDto;
+import com.mohamed.halim.authservice.model.PasswordValidation;
 import com.mohamed.halim.authservice.model.RegisterDto;
 
 import lombok.AllArgsConstructor;
@@ -28,14 +31,33 @@ public class AuthService {
     public AuthResponse registerUser(RegisterDto dto) throws StreamReadException, DatabindException, IOException {
         log.info(dto.toString());
         dto.setPassword(passwordEncoder.encode(dto.getPassword()));
-        Message message = rabbit.sendAndReceive("profile", "register-user", converter.toMessage(dto, null));
+        Message message = rabbit.sendAndReceive("profile", "profile.user.register", converter.toMessage(dto, null));
         String error = message.getMessageProperties().getHeader("error");
         if (error != null) {
             throw new RuntimeException(error);
         }
         log.info(message.toString());
         log.info(new String(message.getBody()));
-        return (AuthResponse) converter.fromMessage(message, new ParameterizedTypeReference<AuthResponse>(){});
+        return (AuthResponse) converter.fromMessage(message, new ParameterizedTypeReference<AuthResponse>() {
+        });
+    }
+
+    public AuthResponse login(LoginDto dto) {
+        Message message = rabbit.sendAndReceive("profile", "profile.user.login", converter.toMessage(dto, null));
+        String error = message.getMessageProperties().getHeader("error");
+        if (error != null) {
+            throw new RuntimeException(error);
+        }
+        log.info(message.toString());
+        log.info(new String(message.getBody()));
+        return (AuthResponse) converter.fromMessage(message, new ParameterizedTypeReference<AuthResponse>() {
+        });
+    }
+
+    @RabbitListener(queues = "auth.password.validation")
+    public boolean validatePassword(PasswordValidation password) {
+        return passwordEncoder.matches(password.getPassword(), password.getHash());
+
     }
 
 }

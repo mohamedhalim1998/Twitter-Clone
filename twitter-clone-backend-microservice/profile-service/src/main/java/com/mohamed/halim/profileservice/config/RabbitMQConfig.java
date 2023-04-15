@@ -1,6 +1,5 @@
 package com.mohamed.halim.profileservice.config;
 
-
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
@@ -23,20 +22,31 @@ public class RabbitMQConfig {
 
     @Bean
     Queue registerQueue() {
-        return new Queue("register-user");
+        return new Queue("profile.user.register");
     }
 
     @Bean
-    Binding bindRegisterQueue(Queue queue, TopicExchange exchange) {
-    return BindingBuilder.bind(queue).to(exchange).with("register-user");
-    }    
+    Binding bindRegisterQueue(TopicExchange exchange) {
+        return BindingBuilder.bind(registerQueue()).to(exchange).with("profile.user.register");
+    }
+
     @Bean
     Queue loadProfileQueue() {
         return new Queue("profile.load.profile");
     }
 
     @Bean
-    Binding bindLoadProfileQueue(Queue queue, TopicExchange exchange) {
-    return BindingBuilder.bind(queue).to(exchange).with("profile.load.profile");
+    Binding bindLoadProfileQueue(TopicExchange exchange) {
+        return BindingBuilder.bind(loadProfileQueue()).to(exchange).with("profile.load.profile");
+    }
+
+    @Bean
+    Queue loginQueue() {
+        return new Queue("profile.user.login");
+    }
+
+    @Bean
+    Binding bindLoginQueue(TopicExchange exchange) {
+        return BindingBuilder.bind(loginQueue()).to(exchange).with("profile.user.login");
     }
 }

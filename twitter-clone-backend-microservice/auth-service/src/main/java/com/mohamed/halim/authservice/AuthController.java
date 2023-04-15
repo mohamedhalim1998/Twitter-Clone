@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.mohamed.halim.authservice.model.AuthResponse;
+import com.mohamed.halim.authservice.model.LoginDto;
 import com.mohamed.halim.authservice.model.RegisterDto;
 
 import lombok.AllArgsConstructor;
@@ -26,6 +27,11 @@ public class AuthController {
     @ResponseStatus(code = HttpStatus.CREATED)
     public AuthResponse registerUser(@RequestBody RegisterDto dto) throws StreamReadException, DatabindException, IOException {
         return authService.registerUser(dto);
+    }
+
+    @PostMapping("/login")
+    public AuthResponse login(@RequestBody LoginDto loginDto) {
+        return authService.login(loginDto);
     }
 
 }
