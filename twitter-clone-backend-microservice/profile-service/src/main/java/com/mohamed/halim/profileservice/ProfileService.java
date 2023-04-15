@@ -51,10 +51,11 @@ public class ProfileService {
         Message message = rabbit.sendAndReceive("jwt",
                 "jwt.token.generate",
                 converter.toMessage(profile, null));
+        String token = (String) converter.fromMessage(message);
         return AuthResponse.builder()
                 .username(profile.getUsername())
                 .email(profile.getEmail())
-                .token(new String(message.getBody()))
+                .token(token)
                 .build();
     }
 
