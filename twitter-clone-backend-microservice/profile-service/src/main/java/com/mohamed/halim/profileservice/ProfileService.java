@@ -1,6 +1,12 @@
 package com.mohamed.halim.profileservice;
 
+import java.io.IOException;
+
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.stereotype.Service;
 
 import com.mohamed.halim.profileservice.config.JwtService;
@@ -9,26 +15,29 @@ import com.mohamed.halim.profileservice.model.Profile;
 import com.mohamed.halim.profileservice.model.RegisterDto;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Service
 @AllArgsConstructor
-@Slf4j
 public class ProfileService {
     private ProfileRepository profileRepository;
     private JwtService jwtService;
+    private RabbitTemplate rabbit;
+    private MessageConverter converter;
 
     @RabbitListener(queues = "register-user")
-    public AuthResponse registerUser(RegisterDto dto) {
+    public void registerUser(RegisterDto dto, Message message) throws IOException {
+        MessageProperties props = message.getMessageProperties();
         if (profileRepository.findByEmail(dto.getEmail()).isPresent()) {
-            throw new RuntimeException("Email used before");
+            props.setHeader("error", "Email used before");
+            rabbit.send(props.getReplyTo(), converter.toMessage("", props));
         }
         if (profileRepository.findByUsername(dto.getUsername()).isPresent()) {
-            throw new RuntimeException("username used before");
+            props.setHeader("error", "username used before");
+            rabbit.send(props.getReplyTo(), converter.toMessage("", props));
         }
-        log.error(dto.toString());
         Profile saved = profileRepository.save(dto.toProfile());
-        return buildAuthResponse(saved);
+        props.setContentType("application/json");
+        rabbit.send(props.getReplyTo(), converter.toMessage(buildAuthResponse(saved), props));
     }
 
     private AuthResponse buildAuthResponse(Profile profile) {
