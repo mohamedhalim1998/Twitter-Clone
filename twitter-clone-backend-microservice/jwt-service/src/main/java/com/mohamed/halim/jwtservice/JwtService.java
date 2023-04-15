@@ -1,10 +1,13 @@
-package com.mohamed.halim.profileservice.config;
+package com.mohamed.halim.jwtservice;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.security.Keys;
@@ -28,8 +31,8 @@ public class JwtService {
     final Claims claims = extractAllClaims(token);
     return claimsResolver.apply(claims);
   }
-
-  public String generateToken(UserDetails userDetails) {
+  @RabbitListener(queues = "jwt.token.generate")
+  public String generateToken(@Payload User userDetails) {
     return generateToken(new HashMap<>(), userDetails);
   }
 
@@ -46,7 +49,7 @@ public class JwtService {
         .signWith(getSignInKey(), SignatureAlgorithm.HS256)
         .compact();
   }
-
+  @RabbitListener(queues = "jwt.token.validation")
   public boolean isTokenValid(String token, UserDetails userDetails) {
     final String username = extractUsername(token);
     return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);

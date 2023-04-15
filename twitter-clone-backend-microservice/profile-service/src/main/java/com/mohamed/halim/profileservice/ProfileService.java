@@ -9,7 +9,6 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.stereotype.Service;
 
-import com.mohamed.halim.profileservice.config.JwtService;
 import com.mohamed.halim.profileservice.model.AuthResponse;
 import com.mohamed.halim.profileservice.model.Profile;
 import com.mohamed.halim.profileservice.model.RegisterDto;
@@ -20,7 +19,6 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class ProfileService {
     private ProfileRepository profileRepository;
-    private JwtService jwtService;
     private RabbitTemplate rabbit;
     private MessageConverter converter;
 
@@ -30,10 +28,12 @@ public class ProfileService {
         if (profileRepository.findByEmail(dto.getEmail()).isPresent()) {
             props.setHeader("error", "Email used before");
             rabbit.send(props.getReplyTo(), converter.toMessage("", props));
+            return;
         }
         if (profileRepository.findByUsername(dto.getUsername()).isPresent()) {
             props.setHeader("error", "username used before");
             rabbit.send(props.getReplyTo(), converter.toMessage("", props));
+            return;
         }
         Profile saved = profileRepository.save(dto.toProfile());
         props.setContentType("application/json");
@@ -41,10 +41,13 @@ public class ProfileService {
     }
 
     private AuthResponse buildAuthResponse(Profile profile) {
+        Message message = rabbit.sendAndReceive("jwt",
+                "jwt.token.generate",
+                converter.toMessage(profile, null));
         return AuthResponse.builder()
                 .username(profile.getUsername())
                 .email(profile.getEmail())
-                .token(jwtService.generateToken(profile))
+                .token(new String(message.getBody()))
                 .build();
     }
 
