@@ -21,10 +21,13 @@ spring:
     host: ${RABBITMQ_SERVER:localhost}
     username: guest
     password: guest
+  h2:
+    console: 
+      enabled: true
+      settings: 
+        web-allow-others: true
+
 eureka:
   client:
     service-url:
-      defaultZone:  ${EUREKA_SERVER}
-
-
-
+      defaultZone: ${EUREKA_SERVER}
