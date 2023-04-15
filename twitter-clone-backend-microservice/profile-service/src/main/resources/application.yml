@@ -2,18 +2,29 @@ server:
   port: 8082
 spring:
   datasource:
-    url: jdbc:h2:mem:testdb
+    url: jdbc:h2:file:./db/profiledb;AUTO_SERVER=TRUE
+
     driverClassName: org.h2.Driver
     username: root
     password: root
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     show-sql: true
+    generate-ddl: true
     properties:
       hibernate:
+        dll-auto: update
         format-sql: true
   application:
     name: profile-service
   rabbitmq:
+    host: ${RABBITMQ_SERVER:localhost}
     username: guest
     password: guest
+eureka:
+  client:
+    service-url:
+      defaultZone:  ${EUREKA_SERVER}
+
+
+
