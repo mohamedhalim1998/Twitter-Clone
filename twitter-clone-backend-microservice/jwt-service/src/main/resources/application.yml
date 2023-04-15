@@ -1,0 +1,16 @@
+server:
+  port: 8083
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER:http://localhost:8761/eureka}
+
+spring:
+  application:
+    name: "jwt-service"
+  rabbitmq:
+    host: ${RABBITMQ_SERVER:localhost}
+    port: 5672
+    username: guest
+    password: guest
+

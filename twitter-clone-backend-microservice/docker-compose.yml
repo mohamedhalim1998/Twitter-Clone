@@ -26,6 +26,19 @@ services:
     depends_on:
       eureka-server:
         condition: service_healthy
+  jwt-service:
+    build: ./jwt-service
+    container_name: jwt-service
+    ports:
+      - 8083:8083
+    volumes:
+      - /home/mhalim/.m2:/root/.m2
+    environment:
+      - EUREKA_SERVER=http://eureka-server:8761/eureka
+      - RABBITMQ_SERVER=rabbitmq
+    depends_on:
+      eureka-server:
+        condition: service_healthy
 
   profile-service:
     build: ./profile-service
