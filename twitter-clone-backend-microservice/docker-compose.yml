@@ -1,4 +1,19 @@
 services:
+  rabbitmq:
+    image: rabbitmq:3.11-management
+    container_name: rabbitmq
+    ports:
+      - 15672:15672
+      - 5672:5672
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 2s
+      retries: 5
+      start_period: 10s
+
+
+
   eureka-server:
     build: ./eureka-server
     container_name: eureka-server
@@ -13,6 +28,8 @@ services:
       retries: 5
       start_period: 10s
 
+
+
   auth-service:
     build: ./auth-service
     container_name: auth-service
@@ -26,6 +43,9 @@ services:
     depends_on:
       eureka-server:
         condition: service_healthy
+
+
+
   jwt-service:
     build: ./jwt-service
     container_name: jwt-service
@@ -40,6 +60,8 @@ services:
       eureka-server:
         condition: service_healthy
 
+
+
   profile-service:
     build: ./profile-service
     container_name: profile-service
@@ -53,17 +75,20 @@ services:
       - RABBITMQ_SERVER=rabbitmq
     depends_on:
       eureka-server:
-        condition: service_healthy  
+        condition: service_healthy
 
-  rabbitmq:
-    image: rabbitmq:3.11-management
-    container_name: rabbitmq
+
+  tweet-service:
+    build: ./tweet-service
+    container_name: tweet-service
     ports:
-      - 15672:15672
-      - 5672:5672
-    healthcheck:
-      test: rabbitmq-diagnostics -q ping
-      interval: 10s
-      timeout: 2s
-      retries: 5
-      start_period: 10s
+      - 8084:8084
+    volumes:
+      - /home/mhalim/.m2:/root/.m2
+      - /home/mhalim/Projects/Twitter/twitter-clone-backend-microservice/db:/app/db
+    environment:
+      - EUREKA_SERVER=http://eureka-server:8761/eureka
+      - RABBITMQ_SERVER=rabbitmq
+    depends_on:
+      eureka-server:
+        condition: service_healthy
