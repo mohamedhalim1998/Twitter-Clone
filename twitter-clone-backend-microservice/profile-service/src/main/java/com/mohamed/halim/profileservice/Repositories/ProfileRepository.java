@@ -1,4 +1,4 @@
-package com.mohamed.halim.profileservice;
+package com.mohamed.halim.profileservice.Repositories;
 
 import java.util.List;
 import java.util.Optional;

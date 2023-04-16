@@ -10,10 +10,13 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 
+import com.mohamed.halim.profileservice.Repositories.FollowRepository;
+import com.mohamed.halim.profileservice.Repositories.ProfileRepository;
 import com.mohamed.halim.profileservice.model.AuthResponse;
 import com.mohamed.halim.profileservice.model.LoginDto;
 import com.mohamed.halim.profileservice.model.PasswordValidation;
 import com.mohamed.halim.profileservice.model.Profile;
+import com.mohamed.halim.profileservice.model.ProfileDto;
 import com.mohamed.halim.profileservice.model.RegisterDto;
 
 import lombok.AllArgsConstructor;
@@ -24,6 +27,7 @@ public class ProfileService {
     private ProfileRepository profileRepository;
     private RabbitTemplate rabbit;
     private MessageConverter converter;
+    private FollowRepository followRepository;
 
     @RabbitListener(queues = "profile.user.register")
     public void registerUser(RegisterDto dto, Message message) throws IOException {
@@ -43,7 +47,7 @@ public class ProfileService {
     }
 
     @RabbitListener(queues = "profile.load.profile")
-    public Profile getProfile(String username) {
+    public Profile loadByUsername(String username) {
         return profileRepository.findByUsername(username).get();
     }
 
@@ -80,6 +84,23 @@ public class ProfileService {
         return rabbit.convertSendAndReceiveAsType("auth", "auth.password.validation",
                 new PasswordValidation(password, hash), new ParameterizedTypeReference<Boolean>() {
                 });
+    }
+
+    public ProfileDto getProfile(String username) {
+        return profileRepository.findByUsername(username).map(this::mapToDto).get();
+    }
+
+    private ProfileDto mapToDto(Profile profile) {
+        ProfileDto dto = ProfileDto.fromProfile(profile);
+        dto.setFollowing(followRepository.countByFollower(profile.getUsername()));
+        dto.setFollowers(followRepository.countByFollowing(profile.getUsername()));
+        int count = rabbit.convertSendAndReceiveAsType("tweet", "tweet.user.tweets.count", profile.getUsername(),
+                new ParameterizedTypeReference<Integer>() {
+
+                });
+        dto.setTweets(count);
+        return dto;
+
     }
 
 }
