@@ -22,6 +22,7 @@ public class RegisterDto {
                 .username(username)
                 .email(email)
                 .password(password)
+                .createdAt(new Date())
                 .birthDay(new Date(birthDay))
                 .build();
     }
