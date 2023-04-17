@@ -35,7 +35,7 @@ public class JwtFilter implements WebFilter {
         Boolean isTokenValid = rabbit.convertSendAndReceiveAsType(
                 "jwt", "jwt.token.validation", token, new ParameterizedTypeReference<Boolean>() {
                 });
-        if (StringUtils.hasText(token) && isTokenValid) {
+        if (StringUtils.hasText(token) && isTokenValid != null && isTokenValid) {
             String username = rabbit.convertSendAndReceiveAsType(
                     "jwt", "jwt.token.extract.username", token, new ParameterizedTypeReference<String>() {
                     });
