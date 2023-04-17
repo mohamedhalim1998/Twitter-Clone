@@ -56,7 +56,7 @@ public class RabbitMQConfig {
     @Bean
     Binding bindTokenValidation(TopicExchange exchange) {
         return BindingBuilder
-                .bind(tokenGeneratQueue()).to(exchange).with("jwt.token.validation");
+                .bind(tokenValidatoinQueue()).to(exchange).with("jwt.token.validation");
     }
 
     @Bean
