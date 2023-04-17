@@ -5,16 +5,14 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.security.Keys;
@@ -26,6 +24,7 @@ import java.util.function.Function;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class JwtService {
   private final RabbitTemplate rabbit;
   private Jackson2JsonMessageConverter converter;
@@ -50,10 +49,7 @@ public class JwtService {
   public void verifyToken(Message message) {
     String token = (String) converter.fromMessage(message);
     var props = message.getMessageProperties();
-    User user = rabbit.convertSendAndReceiveAsType(
-        "profile", "profile.load.profile", extractUsername(token), new ParameterizedTypeReference<User>() {
-        });
-    if (user == null || !isTokenValid(token, user)) {
+    if (!isTokenValid(token)) {
       props.setHeader("error", "username or password is incorrect");
     }
     rabbit.send(props.getReplyTo(), converter.toMessage("", props));
@@ -73,9 +69,9 @@ public class JwtService {
   }
 
   @RabbitListener(queues = "jwt.token.validation")
-  public boolean isTokenValid(String token, UserDetails userDetails) {
-    final String username = extractUsername(token);
-    return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+  public boolean isTokenValid(String token) {
+    log.info("validate: " + token);
+    return !isTokenExpired(token);
   }
 
   private boolean isTokenExpired(String token) {
