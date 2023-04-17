@@ -37,6 +37,7 @@ services:
       - 8081:8081
     volumes:
       - /home/mhalim/.m2:/root/.m2
+      - ./auth-service:/app
     environment:
       - EUREKA_SERVER=http://eureka-server:8761/eureka
       - RABBITMQ_SERVER=rabbitmq
