@@ -1,12 +1,6 @@
 package com.mohamed.halim.profileservice.model;
 
 import java.util.Date;
-import java.util.Collection;
-import java.util.List;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
@@ -19,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder(toBuilder = true)
 @Entity
-public class Profile implements UserDetails {
+public class Profile {
     @Id
     private String username;
     private String fullname;
@@ -34,29 +28,4 @@ public class Profile implements UserDetails {
     private String coverImageUrl;
     private boolean profileProtected;
 
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
 }
