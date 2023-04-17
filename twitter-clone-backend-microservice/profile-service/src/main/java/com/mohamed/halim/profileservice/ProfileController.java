@@ -30,5 +30,9 @@ public class ProfileController {
     public void unfollowUser(@PathVariable String username, @RequestHeader(HttpHeaders.AUTHORIZATION) String auth) {
         profileService.unfollow(auth, username);
     }
+    @PostMapping("/block/{username}")
+    public void blockUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String auth, @PathVariable String username) {
+        profileService.block(auth, username);
+    }
 
 }

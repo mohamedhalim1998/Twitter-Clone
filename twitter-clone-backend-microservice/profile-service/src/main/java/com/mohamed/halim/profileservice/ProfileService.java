@@ -10,9 +10,11 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 
+import com.mohamed.halim.profileservice.Repositories.BlockRepository;
 import com.mohamed.halim.profileservice.Repositories.FollowRepository;
 import com.mohamed.halim.profileservice.Repositories.ProfileRepository;
 import com.mohamed.halim.profileservice.model.AuthResponse;
+import com.mohamed.halim.profileservice.model.Block;
 import com.mohamed.halim.profileservice.model.Follow;
 import com.mohamed.halim.profileservice.model.LoginDto;
 import com.mohamed.halim.profileservice.model.PasswordValidation;
@@ -29,6 +31,7 @@ public class ProfileService {
     private RabbitTemplate rabbit;
     private MessageConverter converter;
     private FollowRepository followRepository;
+    private BlockRepository blockRepository;
 
     @RabbitListener(queues = "profile.user.register")
     public void registerUser(RegisterDto dto, Message message) throws IOException {
@@ -120,6 +123,14 @@ public class ProfileService {
         if (follower != null)
             followRepository.deleteByFollowerAndFollowing(follower, following);
 
+    }
+
+    public void block(String authHeader, String blocking) {
+        String user = rabbit.convertSendAndReceiveAsType("jwt", "jwt.token.extract.username",
+                authHeader.substring(7), new ParameterizedTypeReference<String>() {
+                });
+        if (user != null)
+            blockRepository.save(new Block(null, user, blocking));
     }
 
 }
