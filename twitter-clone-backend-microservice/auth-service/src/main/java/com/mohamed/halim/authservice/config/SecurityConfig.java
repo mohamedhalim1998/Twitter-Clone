@@ -5,19 +5,15 @@ import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.authentication.ReactiveAuthenticationManager;
+import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
+import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -25,50 +21,54 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import com.mohamed.halim.authservice.security.JwtFilter;
 
 import lombok.AllArgsConstructor;
+import reactor.core.publisher.Mono;
 
 @Configuration
-@EnableWebSecurity
 @AllArgsConstructor
+@EnableWebFluxSecurity
 public class SecurityConfig {
     private JwtFilter jwtFilter;
-    private UserDetailsService userDetailsService;
+    private final ReactiveUserDetailsService userDetailsService;
 
     @Bean
-    public SecurityFilterChain config(HttpSecurity http) throws Exception {
-        return http.cors(cors -> {
-            cors.configurationSource(corsConfigurationSource());
-        }).csrf(t -> t.disable())
-                .sessionManagement(management -> management
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider())
-                .authorizeHttpRequests(auth -> {
-                    auth
-                            .requestMatchers("/api/v1/auth/**").permitAll()
-                            .requestMatchers("/h2-console/**").permitAll()
-                            .requestMatchers("/api/v1/media/**").permitAll()
-                            .anyRequest().permitAll();
-                }).headers(headers -> headers.frameOptions().disable())
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+        return http.csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .authorizeExchange(exchange -> {
+                    exchange.pathMatchers("/api/v1/auth/**").permitAll()
+                            .pathMatchers("/h2-console/**").permitAll()
+                            .pathMatchers("/api/v1/media/**").permitAll()
+                            .anyExchange().authenticated();
+                })
+                .exceptionHandling(exception -> {
+                    exception.authenticationEntryPoint((swe, e) -> {
+                        return Mono.fromRunnable(() -> swe.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED));
+                    })
+                            .accessDeniedHandler((swe, e) -> {
+                                return Mono.fromRunnable(() -> swe.getResponse().setStatusCode(HttpStatus.FORBIDDEN));
+                            });
+                })
                 .logout(logout -> {
-                    logout.logoutUrl("/api/v1/auth/logout")
-                    .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK));
+                    logout.logoutUrl("/api/v1/auth/logout");
+                    // .logoutSuccessHandler(logoutSuccessHandler);
 
                 })
+                .addFilterBefore(jwtFilter, SecurityWebFiltersOrder.HTTP_BASIC)
+                .httpBasic(httpBasic -> httpBasic.disable())
                 .build();
+
     }
 
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
+ 
+
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
+    public ReactiveAuthenticationManager authenticationProvider() {
+        UserDetailsRepositoryReactiveAuthenticationManager authenticationManager =
+                new UserDetailsRepositoryReactiveAuthenticationManager(userDetailsService);
+        authenticationManager.setPasswordEncoder(passwordEncoder());
+        return authenticationManager;
     }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
