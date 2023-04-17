@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.mohamed.halim.profileservice.Repositories.FollowRepository;
 import com.mohamed.halim.profileservice.Repositories.ProfileRepository;
 import com.mohamed.halim.profileservice.model.AuthResponse;
+import com.mohamed.halim.profileservice.model.Follow;
 import com.mohamed.halim.profileservice.model.LoginDto;
 import com.mohamed.halim.profileservice.model.PasswordValidation;
 import com.mohamed.halim.profileservice.model.Profile;
@@ -100,6 +101,24 @@ public class ProfileService {
                 });
         dto.setTweets(count);
         return dto;
+
+    }
+
+    public void follow(String authHeader, String following) {
+        String follower = rabbit.convertSendAndReceiveAsType("jwt", "jwt.token.extract.username",
+                authHeader.substring(7), new ParameterizedTypeReference<String>() {
+                });
+        if (follower != null) {
+            followRepository.save(new Follow(null, follower, following));
+        }
+    }
+
+    public void unfollow(String authHeader, String following) {
+        String follower = rabbit.convertSendAndReceiveAsType("jwt", "jwt.token.extract.username",
+                authHeader.substring(7), new ParameterizedTypeReference<String>() {
+                });
+        if (follower != null)
+            followRepository.deleteByFollowerAndFollowing(follower, following);
 
     }
 
