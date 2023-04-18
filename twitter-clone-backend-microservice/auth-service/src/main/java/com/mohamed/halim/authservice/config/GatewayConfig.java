@@ -13,7 +13,7 @@ public class GatewayConfig {
     public RouteLocator routeLocator(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route(r -> r.path("/api/v1/users/**")
-                        .filters(f -> f.rewritePath("/api/v1/users/(?<segment>.*)", "/${segment}"))
+                        .filters(f -> f.rewritePath("/api/v1/(?<segment>.*)", "/${segment}"))
                         .uri("lb://profile-service/"))
                 .build();
     }
