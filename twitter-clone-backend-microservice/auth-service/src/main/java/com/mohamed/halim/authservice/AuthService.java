@@ -9,10 +9,10 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.mohamed.halim.authservice.model.AuthResponse;
-import com.mohamed.halim.authservice.model.LoginDto;
-import com.mohamed.halim.authservice.model.PasswordValidation;
-import com.mohamed.halim.authservice.model.RegisterDto;
+import com.mohamed.halim.dtos.AuthResponse;
+import com.mohamed.halim.dtos.LoginDto;
+import com.mohamed.halim.dtos.PasswordValidation;
+import com.mohamed.halim.dtos.RegisterDto;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

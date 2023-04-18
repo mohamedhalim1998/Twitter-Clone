@@ -15,9 +15,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mohamed.halim.authservice.model.AuthResponse;
-import com.mohamed.halim.authservice.model.LoginDto;
-import com.mohamed.halim.authservice.model.RegisterDto;
+import com.mohamed.halim.dtos.AuthResponse;
+import com.mohamed.halim.dtos.LoginDto;
+import com.mohamed.halim.dtos.RegisterDto;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;

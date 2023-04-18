@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mohamed.halim.profileservice.model.ProfileDto;
+import com.mohamed.halim.dtos.ProfileDto;
 
 import lombok.AllArgsConstructor;
 

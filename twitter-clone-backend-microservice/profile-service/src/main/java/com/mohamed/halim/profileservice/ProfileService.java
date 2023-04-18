@@ -1,6 +1,7 @@
 package com.mohamed.halim.profileservice;
 
 import java.io.IOException;
+import java.util.Date;
 
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
@@ -10,17 +11,17 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 
+import com.mohamed.halim.dtos.AuthResponse;
+import com.mohamed.halim.dtos.LoginDto;
+import com.mohamed.halim.dtos.PasswordValidation;
+import com.mohamed.halim.dtos.ProfileDto;
+import com.mohamed.halim.dtos.RegisterDto;
 import com.mohamed.halim.profileservice.Repositories.BlockRepository;
 import com.mohamed.halim.profileservice.Repositories.FollowRepository;
 import com.mohamed.halim.profileservice.Repositories.ProfileRepository;
-import com.mohamed.halim.profileservice.model.AuthResponse;
 import com.mohamed.halim.profileservice.model.Block;
 import com.mohamed.halim.profileservice.model.Follow;
-import com.mohamed.halim.profileservice.model.LoginDto;
-import com.mohamed.halim.profileservice.model.PasswordValidation;
 import com.mohamed.halim.profileservice.model.Profile;
-import com.mohamed.halim.profileservice.model.ProfileDto;
-import com.mohamed.halim.profileservice.model.RegisterDto;
 
 import lombok.AllArgsConstructor;
 
@@ -46,8 +47,17 @@ public class ProfileService {
             rabbit.send(props.getReplyTo(), converter.toMessage("", props));
             return;
         }
-        Profile saved = profileRepository.save(dto.toProfile());
+        Profile saved = profileRepository.save(registerToProfile(dto));
         rabbit.send(props.getReplyTo(), converter.toMessage(buildAuthResponse(saved), props));
+    }
+    public Profile registerToProfile(RegisterDto dto) {
+        return Profile.builder()
+                .username(dto.getUsername())
+                .email(dto.getEmail())
+                .password(dto.getPassword())
+                .createdAt(new Date())
+                .birthDay(new Date(dto.getBirthDay()))
+                .build();
     }
 
     @RabbitListener(queues = "profile.load.profile")
@@ -95,7 +105,7 @@ public class ProfileService {
     }
 
     private ProfileDto mapToDto(Profile profile) {
-        ProfileDto dto = ProfileDto.fromProfile(profile);
+        ProfileDto dto = dtoFromProfile(profile);
         dto.setFollowing(followRepository.countByFollower(profile.getUsername()));
         dto.setFollowers(followRepository.countByFollowing(profile.getUsername()));
         int count = rabbit.convertSendAndReceiveAsType("tweet", "tweet.user.tweets.count", profile.getUsername(),
@@ -105,6 +115,20 @@ public class ProfileService {
         dto.setTweets(count);
         return dto;
 
+    }
+
+    public ProfileDto dtoFromProfile(Profile profile) {
+        return ProfileDto.builder()
+                .fullname(profile.getFullname())
+                .username(profile.getUsername())
+                .createdAt(profile.getCreatedAt().getTime())
+                .bio(profile.getBio())
+                .location(profile.getLocation())
+                .pinnedTweetId(profile.getPinnedTweetId())
+                .profileImageUrl(profile.getProfileImageUrl())
+                .coverImageUrl(profile.getCoverImageUrl())
+                .profileProtected(profile.isProfileProtected())
+                .build();
     }
 
     public void follow(String authHeader, String following) {
