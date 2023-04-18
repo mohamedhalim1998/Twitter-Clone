@@ -71,9 +71,7 @@
 		<dependency>
 			<groupId>com.mohamed.halim</groupId>
 			<artifactId>dtos</artifactId>
-			<scope>system</scope>
 			<version>0.0.1-SNAPSHOT</version>
-			<systemPath>/home/mhalim/Projects/Twitter/twitter-clone-backend-microservice/dtos/target/dtos-0.0.1-SNAPSHOT.jar</systemPath>
 		</dependency>
 	</dependencies>
 	<dependencyManagement>
