@@ -9,12 +9,21 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.mohamed.halim.dtos.AuthResponse;
 import com.mohamed.halim.dtos.LoginDto;
+import com.mohamed.halim.dtos.MediaDto;
 import com.mohamed.halim.dtos.PasswordValidation;
 import com.mohamed.halim.dtos.ProfileDto;
+import com.mohamed.halim.dtos.ProfileInfo;
 import com.mohamed.halim.dtos.RegisterDto;
 import com.mohamed.halim.profileservice.Repositories.BlockRepository;
 import com.mohamed.halim.profileservice.Repositories.FollowRepository;
@@ -33,6 +42,7 @@ public class ProfileService {
     private MessageConverter converter;
     private FollowRepository followRepository;
     private BlockRepository blockRepository;
+    private RestTemplate restTemplate;
 
     @RabbitListener(queues = "profile.user.register")
     public void registerUser(RegisterDto dto, Message message) throws IOException {
@@ -50,6 +60,7 @@ public class ProfileService {
         Profile saved = profileRepository.save(registerToProfile(dto));
         rabbit.send(props.getReplyTo(), converter.toMessage(buildAuthResponse(saved), props));
     }
+
     public Profile registerToProfile(RegisterDto dto) {
         return Profile.builder()
                 .username(dto.getUsername())
@@ -155,6 +166,37 @@ public class ProfileService {
                 });
         if (user != null)
             blockRepository.save(new Block(null, user, blocking));
+    }
+
+    public ProfileDto updateProfile(String authHeader, ProfileInfo profileInfo, MultipartFile profileImage,
+            MultipartFile coverImage) {
+        String username = rabbit.convertSendAndReceiveAsType("jwt", "jwt.token.extract.username",
+                authHeader.substring(7), new ParameterizedTypeReference<String>() {
+                });
+        Profile profile = profileRepository.findById(username).get();
+        profile.setFullname(profileInfo.getName());
+        profile.setBio(profileInfo.getBio());
+        profile.setLocation(profileInfo.getLocation());
+        if (profileImage != null) {
+            MediaDto profileMedia = postMedia(profileImage);
+            profile.setProfileImageUrl(profileMedia.getUrl());
+        }
+        if (coverImage != null) {
+            MediaDto coverMedia = postMedia(coverImage);
+            profile.setCoverImageUrl(coverMedia.getUrl());
+        }
+        return mapToDto(profileRepository.save(profile));
+    }
+
+    private MediaDto postMedia(MultipartFile profileImage) {
+        MultiValueMap<String, Object> requestBody = new LinkedMultiValueMap<>();
+        requestBody.add("media", profileImage.getResource());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        MediaDto media = restTemplate.postForObject("lb://media-service/media",
+                new HttpEntity<>(requestBody, headers),
+                MediaDto.class);
+        return media;
     }
 
 }
