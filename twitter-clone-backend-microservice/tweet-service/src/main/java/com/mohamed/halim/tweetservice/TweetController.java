@@ -40,4 +40,9 @@ public class TweetController {
     public List<TweetDto> getUserFeed(@RequestHeader(HttpHeaders.AUTHORIZATION) String auth) {
         return tweetService.getUserFeed(auth);
     }
+
+    @GetMapping("/user/{username}")
+    public List<TweetDto> getUserTweets(@RequestHeader(HttpHeaders.AUTHORIZATION) String auth) {
+        return tweetService.getUserTweets(auth);
+    }
 }
