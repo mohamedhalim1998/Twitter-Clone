@@ -18,6 +18,9 @@ public class GatewayConfig {
                 .route(r -> r.path("/api/v1/media/**")
                         .filters(f -> f.rewritePath("/api/v1/(?<segment>.*)", "/${segment}"))
                         .uri("lb://media-service/"))
+                .route(r -> r.path("/api/v1/tweets/**")
+                        .filters(f -> f.rewritePath("/api/v1/(?<segment>.*)", "/${segment}"))
+                        .uri("lb://tweet-service/"))
                 .build();
     }
 
