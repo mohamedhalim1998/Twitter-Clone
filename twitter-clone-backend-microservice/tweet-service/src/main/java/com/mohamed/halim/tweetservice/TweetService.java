@@ -25,6 +25,8 @@ import com.mohamed.halim.dtos.MediaDto;
 import com.mohamed.halim.dtos.PollDto;
 import com.mohamed.halim.dtos.ProfileDto;
 import com.mohamed.halim.dtos.TweetDto;
+import com.mohamed.halim.dtos.TweetRefrence;
+import com.mohamed.halim.dtos.TweetRefrenceType;
 import com.mohamed.halim.tweetservice.model.Tweet;
 import com.mohamed.halim.tweetservice.repositories.LikeRepository;
 import com.mohamed.halim.tweetservice.repositories.RetweetRpository;
@@ -176,5 +178,22 @@ public class TweetService {
 
         return tweetRepository.findAllByAuthorIdOrderByCreatedDateDesc(username, PageRequest.of(0, 50)).stream()
                 .map(t -> convertToDto(t, true)).toList();
+    }
+
+    public TweetDto retweet(Long id, String authHeader) {
+        String username = rabbit.convertSendAndReceiveAsType("jwt", "jwt.token.extract.username",
+                authHeader.substring(7), new ParameterizedTypeReference<String>() {
+                });
+
+        Tweet tweet = tweetRepository.findById(id).get()
+                .toBuilder()
+                .id(null)
+                .tweetRefrence(new TweetRefrence(TweetRefrenceType.RETWEET, id))
+                .authorId(username)
+                .createdDate(LocalDateTime.now())
+                .build();
+
+        tweet = tweetRepository.save(tweet);
+        return convertToDto(tweet, true);
     }
 }

@@ -45,4 +45,10 @@ public class TweetController {
     public List<TweetDto> getUserTweets(@RequestHeader(HttpHeaders.AUTHORIZATION) String auth) {
         return tweetService.getUserTweets(auth);
     }
+    @PostMapping("/retweet/{id}")
+    public TweetDto retweet(@PathVariable Long id, @RequestHeader(HttpHeaders.AUTHORIZATION) String auth) {
+        return tweetService.retweet(id, auth);
+
+    }
+
 }
