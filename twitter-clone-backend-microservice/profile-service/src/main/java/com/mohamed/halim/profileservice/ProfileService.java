@@ -1,7 +1,10 @@
 package com.mohamed.halim.profileservice;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
@@ -110,6 +113,7 @@ public class ProfileService {
                 new PasswordValidation(password, hash), new ParameterizedTypeReference<Boolean>() {
                 });
     }
+
     @RabbitListener(queues = "profile.load.profile.dto")
     public ProfileDto getProfile(String username) {
         return profileRepository.findByUsername(username).map(this::mapToDto).get();
@@ -197,6 +201,12 @@ public class ProfileService {
                 new HttpEntity<>(requestBody, headers),
                 MediaDto.class);
         return media;
+    }
+
+    @RabbitListener(queues = "profile.following")
+    public List<String> getUserFollowing(String username) {
+        return followRepository.findAllByFollower(username).stream().map(f -> f.getFollowing())
+        .collect(Collectors.toCollection(ArrayList::new));
     }
 
 }

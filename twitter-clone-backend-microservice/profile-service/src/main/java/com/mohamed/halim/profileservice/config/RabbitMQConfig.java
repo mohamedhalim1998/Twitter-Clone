@@ -31,10 +31,6 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    Queue loadProfileQueue() {
-        return new Queue("profile.load.profile");
-    }
-  @Bean
     Queue loadProfileDtoQueue() {
         return new Queue("profile.load.profile.dto");
     }
@@ -43,7 +39,23 @@ public class RabbitMQConfig {
     Binding bindLoadProfileDtoQueue(TopicExchange exchange) {
         return BindingBuilder.bind(loadProfileDtoQueue()).to(exchange).with("profile.load.profile.dto");
     }
-   @Bean
+
+    @Bean
+    Queue profileFollowingQueue() {
+        return new Queue("profile.following");
+    }
+
+    @Bean
+    Binding bindProfileFollowingQueue(TopicExchange exchange) {
+        return BindingBuilder.bind(profileFollowingQueue()).to(exchange).with("profile.following");
+    }
+
+    @Bean
+    Queue loadProfileQueue() {
+        return new Queue("profile.load.profile");
+    }
+
+    @Bean
     Binding bindLoadProfileQueue(TopicExchange exchange) {
         return BindingBuilder.bind(loadProfileQueue()).to(exchange).with("profile.load.profile");
     }
