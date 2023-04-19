@@ -1,5 +1,7 @@
 package com.mohamed.halim.tweetservice;
 
+import java.util.List;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,9 +30,14 @@ public class TweetController {
             @RequestHeader(HttpHeaders.AUTHORIZATION) String auth) {
         return tweetService.addTweet(tweet, media, poll, auth);
     }
-    
+
     @GetMapping("/{id}")
     public TweetDto getTweet(@PathVariable Long id) {
         return tweetService.getTweet(id);
+    }
+
+    @GetMapping("/feed")
+    public List<TweetDto> getUserFeed(@RequestHeader(HttpHeaders.AUTHORIZATION) String auth) {
+        return tweetService.getUserFeed(auth);
     }
 }

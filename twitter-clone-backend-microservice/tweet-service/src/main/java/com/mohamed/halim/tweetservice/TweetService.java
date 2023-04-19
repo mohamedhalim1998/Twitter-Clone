@@ -2,11 +2,13 @@ package com.mohamed.halim.tweetservice;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -152,6 +154,18 @@ public class TweetService {
 
     public TweetDto getTweet(Long id) {
         return tweetRepository.findById(id).map(t -> convertToDto(t, true)).get();
+    }
+
+    public List<TweetDto> getUserFeed(String authHeader) {
+        String username = rabbit.convertSendAndReceiveAsType("jwt", "jwt.token.extract.username",
+                authHeader.substring(7), new ParameterizedTypeReference<String>() {
+                });
+        List<String> following = rabbit.convertSendAndReceiveAsType("profile", "profile.following",
+                authHeader.substring(7), new ParameterizedTypeReference<List<String>>() {
+                });
+        following.add(username);
+        return tweetRepository.findAllByAuthorIdInOrderByCreatedDateDesc(following, PageRequest.of(0, 50)).stream()
+                .map(t -> convertToDto(t, true)).toList();
     }
 
 }
