@@ -3,6 +3,9 @@ package com.mohamed.halim.tweetservice.model;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.mohamed.halim.dtos.Attachment;
+import com.mohamed.halim.dtos.TweetRefrence;
+
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
