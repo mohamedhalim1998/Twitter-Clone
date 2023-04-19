@@ -1,0 +1,33 @@
+server:
+  port: 8087
+spring:
+  datasource:
+    url: jdbc:h2:file:./db/messagesdb;AUTO_SERVER=TRUE
+
+    driverClassName: org.h2.Driver
+    username: root
+    password: root
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+    generate-ddl: true
+    properties:
+      hibernate:
+        dll-auto: update
+        format-sql: true
+  application:
+    name: messages-service
+  rabbitmq:
+    host: ${RABBITMQ_SERVER:localhost}
+    username: guest
+    password: guest
+  h2:
+    console: 
+      enabled: true
+      settings: 
+        web-allow-others: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER}
