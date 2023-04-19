@@ -16,6 +16,7 @@ import org.apache.tika.metadata.XMPDM;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.mp4.MP4Parser;
 import org.apache.tika.sax.BodyContentHandler;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -120,7 +121,7 @@ public class MediaService {
         };
 
     }
-
+    @RabbitListener(queues = "media.get")
     public MediaDto getMedia(Long attacmentId) {
         return mediaRepository.findById(attacmentId).map(this::convertToDto).get();
     }
