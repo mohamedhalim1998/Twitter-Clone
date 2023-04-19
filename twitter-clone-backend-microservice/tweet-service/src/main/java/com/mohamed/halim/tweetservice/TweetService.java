@@ -27,6 +27,7 @@ import com.mohamed.halim.dtos.ProfileDto;
 import com.mohamed.halim.dtos.TweetDto;
 import com.mohamed.halim.dtos.TweetRefrence;
 import com.mohamed.halim.dtos.TweetRefrenceType;
+import com.mohamed.halim.tweetservice.model.Like;
 import com.mohamed.halim.tweetservice.model.Tweet;
 import com.mohamed.halim.tweetservice.repositories.LikeRepository;
 import com.mohamed.halim.tweetservice.repositories.RetweetRpository;
@@ -215,5 +216,12 @@ public class TweetService {
                 .build();
 
         return convertToDto(tweetRepository.save(tweet), true);
+    }
+
+    public void likeTweet(Long id, String authHeader) {
+        String username = rabbit.convertSendAndReceiveAsType("jwt", "jwt.token.extract.username",
+                authHeader.substring(7), new ParameterizedTypeReference<String>() {
+                });
+        likeRepository.save(new Like(null, username, id));
     }
 }

@@ -45,6 +45,7 @@ public class TweetController {
     public List<TweetDto> getUserTweets(@RequestHeader(HttpHeaders.AUTHORIZATION) String auth) {
         return tweetService.getUserTweets(auth);
     }
+
     @PostMapping("/retweet/{id}")
     public TweetDto retweet(@PathVariable Long id, @RequestHeader(HttpHeaders.AUTHORIZATION) String auth) {
         return tweetService.retweet(id, auth);
@@ -58,6 +59,13 @@ public class TweetController {
             @RequestPart(name = "media", required = false) MultipartFile media,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String auth) {
         return tweetService.replayToTweet(id, tweet, media, auth);
+    }
+
+    @PostMapping("like/{id}")
+    public void likeTweet(
+            @PathVariable Long id,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String auth) {
+        tweetService.likeTweet(id, auth);
     }
 
 }
