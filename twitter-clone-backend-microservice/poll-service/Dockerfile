@@ -5,6 +5,6 @@ WORKDIR /app
 VOLUME ["/root/.m2"]
 
 # COPY . .
-EXPOSE 8085
+EXPOSE 8086
 
 CMD ["./mvnw", "spring-boot:run"]
