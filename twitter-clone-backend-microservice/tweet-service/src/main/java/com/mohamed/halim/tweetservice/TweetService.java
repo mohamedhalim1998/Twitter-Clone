@@ -196,4 +196,24 @@ public class TweetService {
         tweet = tweetRepository.save(tweet);
         return convertToDto(tweet, true);
     }
+
+    public TweetDto replayToTweet(Long id, TweetDto tweetDto, MultipartFile media, String authHeader) {
+        String username = rabbit.convertSendAndReceiveAsType("jwt", "jwt.token.extract.username",
+                authHeader.substring(7), new ParameterizedTypeReference<String>() {
+                });
+        Attachment attachment = null;
+        if (media != null) {
+            long mediaId = postMedia(media).getId();
+            attachment = new Attachment(AttachmentType.MEDIA, mediaId);
+        }
+        Tweet tweet = Tweet.builder().text(tweetDto.getText())
+                .authorId(username)
+                .attachment(attachment)
+                .conversationId(id)
+                .tweetRefrence(new TweetRefrence(TweetRefrenceType.REPLAY, id))
+                .createdDate(LocalDateTime.now())
+                .build();
+
+        return convertToDto(tweetRepository.save(tweet), true);
+    }
 }

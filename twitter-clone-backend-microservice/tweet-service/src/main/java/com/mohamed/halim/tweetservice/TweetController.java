@@ -51,4 +51,13 @@ public class TweetController {
 
     }
 
+    @PostMapping("replay/{id}")
+    public TweetDto replayToTweet(
+            @PathVariable Long id,
+            @RequestPart(name = "tweet", required = true) TweetDto tweet,
+            @RequestPart(name = "media", required = false) MultipartFile media,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String auth) {
+        return tweetService.replayToTweet(id, tweet, media, auth);
+    }
+
 }
