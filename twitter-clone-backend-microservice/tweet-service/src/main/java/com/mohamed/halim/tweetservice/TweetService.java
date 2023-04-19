@@ -150,4 +150,8 @@ public class TweetService {
         }
     }
 
+    public TweetDto getTweet(Long id) {
+        return tweetRepository.findById(id).map(t -> convertToDto(t, true)).get();
+    }
+
 }

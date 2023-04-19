@@ -1,6 +1,8 @@
 package com.mohamed.halim.tweetservice;
 
 import org.springframework.http.HttpHeaders;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,5 +27,10 @@ public class TweetController {
             @RequestPart(name = "poll", required = false) PollDto poll,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String auth) {
         return tweetService.addTweet(tweet, media, poll, auth);
+    }
+    
+    @GetMapping("/{id}")
+    public TweetDto getTweet(@PathVariable Long id) {
+        return tweetService.getTweet(id);
     }
 }
