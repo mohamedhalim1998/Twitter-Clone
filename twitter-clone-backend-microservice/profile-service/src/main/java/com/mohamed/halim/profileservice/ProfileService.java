@@ -110,7 +110,7 @@ public class ProfileService {
                 new PasswordValidation(password, hash), new ParameterizedTypeReference<Boolean>() {
                 });
     }
-
+    @RabbitListener(queues = "profile.load.profile.dto")
     public ProfileDto getProfile(String username) {
         return profileRepository.findByUsername(username).map(this::mapToDto).get();
     }
