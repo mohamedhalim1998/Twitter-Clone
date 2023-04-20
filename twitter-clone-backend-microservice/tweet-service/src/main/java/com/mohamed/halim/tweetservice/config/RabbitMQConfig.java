@@ -26,8 +26,18 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    Binding bindRegisterQueue(TopicExchange exchange) {
+    Binding bindCountUserTweetsQueue(TopicExchange exchange) {
         return BindingBuilder.bind(countUserTweetsQueue()).to(exchange).with("tweet.user.tweets.count");
+    }  
+    
+    @Bean
+    Queue tweetsSearchQueue() {
+        return new Queue("tweet.search");
+    }
+
+    @Bean
+    Binding tweetsSeactrQueue(TopicExchange exchange) {
+        return BindingBuilder.bind(tweetsSearchQueue()).to(exchange).with("tweet.search");
     }
 
     
