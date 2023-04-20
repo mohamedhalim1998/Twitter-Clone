@@ -38,7 +38,7 @@ public class Message {
                 .from(dto.getFrom())
                 .to(dto.getTo())
                 .text(dto.getText())
-                .mediaId(dto.getMedia().getId())
+                .mediaId(dto.getMedia() != null ? dto.getMedia().getId() : null)
                 .time(LocalDateTime.now())
                 .build();
     }
