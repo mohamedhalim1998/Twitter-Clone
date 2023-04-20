@@ -1,11 +1,12 @@
 package com.mohamed.halim.messagesservice;
 
-import java.security.Principal;
 import java.util.List;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,8 +34,8 @@ public class MessageController {
     }
 
     @PostMapping("/{to}")
-    public List<MessageDto> getUserConversation(@PathVariable String to, Principal principal) {
-        return messageService.getUserConversation(principal.getName(), to);
+    public List<MessageDto> getUserConversation(@PathVariable String to,  @RequestHeader(HttpHeaders.AUTHORIZATION) String auth) {
+        return messageService.getUserConversation(auth, to);
     }
 
 }

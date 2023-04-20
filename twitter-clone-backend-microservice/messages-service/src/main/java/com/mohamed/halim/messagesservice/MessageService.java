@@ -33,7 +33,10 @@ public class MessageService {
         messagingTemplate.convertAndSend("/message/" + message.getTo(), message);
     }
 
-    public List<MessageDto> getUserConversation(String from, String to) {
+    public List<MessageDto> getUserConversation(String authHeader, String to) {
+        String from = rabbit.convertSendAndReceiveAsType("jwt", "jwt.token.extract.username",
+                authHeader.substring(7), new ParameterizedTypeReference<String>() {
+                });
         return messageRepository.findAllByFromAndToOrderByTimeDesc(from, to, PageRequest.of(0, 20)).stream()
                 .map(message -> {
                     MessageDto dto = message.toDto();
