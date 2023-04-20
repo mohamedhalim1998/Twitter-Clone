@@ -6,6 +6,5 @@ VOLUME ["/root/.m2"]
 
 # COPY . .
 EXPOSE 8087
-ENV server.port=8082
 
 CMD ["./mvnw", "spring-boot:run"]
