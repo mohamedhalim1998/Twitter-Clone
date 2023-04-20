@@ -209,4 +209,11 @@ public class ProfileService {
         .collect(Collectors.toCollection(ArrayList::new));
     }
 
+    public ProfileDto getCurrProfile(String authHeader) {
+        String user = rabbit.convertSendAndReceiveAsType("jwt", "jwt.token.extract.username",
+        authHeader.substring(7), new ParameterizedTypeReference<String>() {
+        });
+        return getProfile(user);
+    }
+
 }

@@ -28,6 +28,10 @@ public class ProfileController {
     public ProfileDto getProfile(@PathVariable String username) {
         return profileService.getProfile(username);
     }
+ @GetMapping("/logged")
+    public ProfileDto getCurrProfile( @RequestHeader(HttpHeaders.AUTHORIZATION) String auth) {
+        return profileService.getCurrProfile(auth);
+    }
 
     @PostMapping("/follow/{username}")
     public void followUser(@PathVariable String username, @RequestHeader(HttpHeaders.AUTHORIZATION) String auth) {
