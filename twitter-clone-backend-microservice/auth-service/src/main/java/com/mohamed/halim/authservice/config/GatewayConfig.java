@@ -21,6 +21,9 @@ public class GatewayConfig {
                 .route(r -> r.path("/api/v1/tweets/**")
                         .filters(f -> f.rewritePath("/api/v1/(?<segment>.*)", "/${segment}"))
                         .uri("lb://tweet-service/"))
+                .route(r -> r.path("/ws/messages/**")
+                        .filters(f -> f.rewritePath("/ws/messages/(?<segment>.*)", "/${segment}"))
+                        .uri("lb://messages-service/"))
                 .build();
     }
 
