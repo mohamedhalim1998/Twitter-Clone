@@ -93,6 +93,8 @@ services:
     depends_on:
       eureka-server:
         condition: service_healthy
+
+
   media-service:
     build: ./media-service
     container_name: media-service
@@ -108,6 +110,8 @@ services:
     depends_on:
       eureka-server:
         condition: service_healthy
+
+
   poll-service:
     build: ./poll-service
     container_name: poll-service
@@ -123,6 +127,8 @@ services:
     depends_on:
       eureka-server:
         condition: service_healthy
+
+
   messages-service:
     build: ./messages-service
     container_name: messages-service
@@ -138,6 +144,9 @@ services:
     depends_on:
       eureka-server:
         condition: service_healthy
+
+
+
   notification-service:
     build: ./notification-service
     container_name: notification-service
@@ -147,6 +156,22 @@ services:
       - ./notification-service:/app
       - /home/mhalim/.m2:/root/.m2
       - /home/mhalim/Projects/Twitter/twitter-clone-backend-microservice/db:/app/db
+    environment:
+      - EUREKA_SERVER=http://eureka-server:8761/eureka
+      - RABBITMQ_SERVER=rabbitmq
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+
+        
+  search-service:
+    build: ./srearch-service
+    container_name: srearch-service
+    ports:
+      - 8089:8089
+    volumes:
+      - ./srearch-service:/app
+      - /home/mhalim/.m2:/root/.m2
     environment:
       - EUREKA_SERVER=http://eureka-server:8761/eureka
       - RABBITMQ_SERVER=rabbitmq

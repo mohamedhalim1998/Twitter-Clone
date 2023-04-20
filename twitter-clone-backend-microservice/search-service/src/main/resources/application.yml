@@ -1,0 +1,13 @@
+server:
+  port: 8089
+spring:
+  application:
+    name: search-service
+  rabbitmq:
+    host: ${RABBITMQ_SERVER:localhost}
+    username: guest
+    password: guest
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER}
