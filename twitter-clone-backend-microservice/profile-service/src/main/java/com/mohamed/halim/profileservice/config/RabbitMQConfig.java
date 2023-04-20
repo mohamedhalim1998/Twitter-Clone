@@ -69,4 +69,14 @@ public class RabbitMQConfig {
     Binding bindLoginQueue(TopicExchange exchange) {
         return BindingBuilder.bind(loginQueue()).to(exchange).with("profile.user.login");
     }
+
+    @Bean
+    Queue searchQueue() {
+        return new Queue("profile.search");
+    }
+
+    @Bean
+    Binding bindSearchQueue(TopicExchange exchange) {
+        return BindingBuilder.bind(searchQueue()).to(exchange).with("profile.search");
+    }
 }
