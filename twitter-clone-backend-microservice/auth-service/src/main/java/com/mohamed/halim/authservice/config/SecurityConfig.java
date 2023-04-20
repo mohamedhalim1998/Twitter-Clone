@@ -37,6 +37,7 @@ public class SecurityConfig {
                     exchange.pathMatchers("/api/v1/auth/**").permitAll()
                             .pathMatchers("/h2-console/**").permitAll()
                             .pathMatchers("/api/v1/media/**").permitAll()
+                            .pathMatchers("/ws/**").permitAll()
                             .anyExchange().authenticated();
                 })
                 .exceptionHandling(exception -> {
