@@ -42,8 +42,8 @@ public class TweetController {
     }
 
     @GetMapping("/user/{username}")
-    public List<TweetDto> getUserTweets(@RequestHeader(HttpHeaders.AUTHORIZATION) String auth) {
-        return tweetService.getUserTweets(auth);
+    public List<TweetDto> getUserTweets(@PathVariable String username) {
+        return tweetService.getUserTweets(username);
     }
 
     @PostMapping("/retweet/{id}")

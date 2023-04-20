@@ -172,11 +172,7 @@ public class TweetService {
                 .map(t -> convertToDto(t, true)).toList();
     }
 
-    public List<TweetDto> getUserTweets(String authHeader) {
-        String username = rabbit.convertSendAndReceiveAsType("jwt", "jwt.token.extract.username",
-                authHeader.substring(7), new ParameterizedTypeReference<String>() {
-                });
-
+    public List<TweetDto> getUserTweets(String username) {
         return tweetRepository.findAllByAuthorIdOrderByCreatedDateDesc(username, PageRequest.of(0, 50)).stream()
                 .map(t -> convertToDto(t, true)).toList();
     }
