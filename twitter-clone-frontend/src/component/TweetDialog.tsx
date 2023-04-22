@@ -3,7 +3,6 @@ import {  XMarkIcon } from "./Icons";
 import TweetForm, { TweetFormParams } from "./TweetForm";
 
 export const TweetDialog = (props: {
-  onSubmit: (date: TweetFormParams) => void;
   onClose: () => void;
   isOpen?: boolean;
 }) => {
@@ -15,7 +14,7 @@ export const TweetDialog = (props: {
           className="w-10 p-2 text-gray-800 rounded-full hover:bg-gray-200 my-2"
           onClick={props.onClose}
         />
-        <TweetForm onSubmit={props.onSubmit} />
+        <TweetForm  />
       </div>
     </div>
   );

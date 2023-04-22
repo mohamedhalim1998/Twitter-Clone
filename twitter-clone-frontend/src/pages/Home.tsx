@@ -1,17 +1,10 @@
-import moment from "moment";
 import React, { useEffect } from "react";
 import RightBar from "../component/RightBar";
 import SideBar from "../component/SideBar";
-import TweetForm, { TweetFormParams } from "../component/TweetForm";
+import TweetForm from "../component/TweetForm";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { postTweet } from "../store/TweetReducer";
 import { TweetCard } from "../component/TweetCard";
 import { Divider } from "../component/Divider";
-import {
-  loadProfile,
-  ProfileState,
-  updateProfileLoading,
-} from "../store/ProfileReducer";
 import { RootState } from "../store/Store";
 import {
   FeedState,
@@ -38,24 +31,6 @@ function Home() {
         <h1 className="text-2xl font-bold text-gray-800">Home</h1>
         <Divider />
         <TweetForm
-          onSubmit={(data: TweetFormParams) => {
-            dispatch(
-              postTweet(
-                data.text,
-                data.isPoll
-                  ? {
-                      options: data.pollOptions,
-                      duration: moment()
-                        .day(data.pollLengthDays!!)
-                        .hour(data.pollLengthHours!!)
-                        .minute(data.pollLengthMinute!!)
-                        .valueOf(),
-                    }
-                  : undefined,
-                data.hasMedia ? data.media : undefined
-              )
-            );
-          }}
         />
         {feed.tweets.map((tweet, i) => {
           return <TweetCard tweet={tweet} key={i} />;

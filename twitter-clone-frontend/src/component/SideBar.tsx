@@ -13,12 +13,8 @@ import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { logout } from "../store/AuthReducer";
 import DropDownMenu, { MenuItemParam } from "./DropDownMenu";
-import { stat } from "fs";
 import { SideBarItem } from "./SideBarItem";
 import { TweetDialog } from "./TweetDialog";
-import { postTweet } from "../store/TweetReducer";
-import moment from "moment";
-import { TweetFormParams } from "./TweetForm";
 import {
   loadProfile,
   ProfileState,
@@ -26,6 +22,7 @@ import {
 } from "../store/ProfileReducer";
 import { RootState } from "../store/Store";
 import Profile from "../model/Profile";
+import { updateFeedLoading, getUserFeed } from "../store/FeedReducer";
 
 export function SideBar() {
   const dispatch = useAppDispatch();
@@ -83,24 +80,6 @@ export function SideBar() {
           isOpen={dialogOpen}
           onClose={() => {
             setDialogOpen(false);
-          }}
-          onSubmit={(data: TweetFormParams) => {
-            dispatch(
-              postTweet(
-                data.text,
-                data.isPoll
-                  ? {
-                      options: data.pollOptions,
-                      duration: moment()
-                        .day(data.pollLengthDays!!)
-                        .hour(data.pollLengthHours!!)
-                        .minute(data.pollLengthMinute!!)
-                        .valueOf(),
-                    }
-                  : undefined,
-                data.hasMedia ? data.media : undefined
-              )
-            );
           }}
         />
         <ProfileMenu

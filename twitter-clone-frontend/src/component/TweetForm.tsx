@@ -1,14 +1,16 @@
 import produce from "immer";
 import React, { useState } from "react";
-import { number } from "yup";
 import { XMarkIcon, PollIcon } from "./Icons";
 import { MediaButton } from "./MediaButton";
 import { PollForm } from "./PollForm";
 import { TweetButton } from "./SideBar";
 import _ from "lodash";
-import { useAppSelector } from "../store/hooks";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { ProfileState } from "../store/ProfileReducer";
 import { RootState } from "../store/Store";
+import moment from "moment";
+import { postTweet } from "../store/TweetReducer";
+import { updateFeedLoading, getUserFeed } from "../store/FeedReducer";
 export interface TweetFormParams {
   text: string;
   isPoll: boolean;
@@ -21,10 +23,9 @@ export interface TweetFormParams {
   mediaSrc?: string;
   mediaType?: string;
 }
-function TweetForm(props: {
-  onSubmit: (date: TweetFormParams) => void;
-  disablePoll?: boolean;
-}) {
+function TweetForm(props: {disablePoll?: boolean }) {
+  const dispatch = useAppDispatch();
+
   const [state, setState] = useState<TweetFormParams>({
     text: "",
     isPoll: false,
@@ -142,12 +143,32 @@ function TweetForm(props: {
         <TweetButton
           className="w-fit ml-auto text-white bg-theme hover:bg-blue-400 rounded-3xl px-6 py-2 cursor-pointer"
           onClick={() => {
-            props.onSubmit(state);
+            dispatch(
+              postTweet(
+                state.text,
+                state.isPoll
+                  ? {
+                      options: state.pollOptions?.filter(
+                        (option) => option.trim().length > 0
+                      ),
+                      duration: moment()
+                        .day(state.pollLengthDays!!)
+                        .hour(state.pollLengthHours!!)
+                        .minute(state.pollLengthMinute!!)
+                        .valueOf(),
+                    }
+                  : undefined,
+                state.hasMedia ? state.media : undefined
+              )
+            );
             setState({
               text: "",
               isPoll: false,
               hasMedia: false,
             });
+            
+            dispatch(updateFeedLoading(true));
+            dispatch(getUserFeed());
           }}
         />
       </div>
