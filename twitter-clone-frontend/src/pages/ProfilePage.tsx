@@ -56,7 +56,7 @@ function ProfilePage() {
   }
   return (
     <div className="w-2/3 mx-auto grid grid-cols-11">
-      <div className="col-span-2">
+      <div className="col-span-2 z-10">
         <SideBar />
       </div>
       <div className="flex flex-col col-span-6 border-x border-gray-100 gap-3 ">

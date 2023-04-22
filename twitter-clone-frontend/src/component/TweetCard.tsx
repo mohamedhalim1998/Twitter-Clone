@@ -110,14 +110,7 @@ const TweetActionBar = ({
         onClose={() => {
           setShowReplayDialog(false);
         }}
-        onSubmit={(data) => {
-          dispatch(
-            replayTweet(
-              tweet!.id,
-              data.text,
-              data.hasMedia ? data.media : undefined
-            )
-          );
+        onSubmit={() => {
           setShowReplayDialog(false);
         }}
       />

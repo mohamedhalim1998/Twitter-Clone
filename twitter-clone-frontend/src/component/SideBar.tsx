@@ -22,7 +22,6 @@ import {
 } from "../store/ProfileReducer";
 import { RootState } from "../store/Store";
 import Profile from "../model/Profile";
-import { updateFeedLoading, getUserFeed } from "../store/FeedReducer";
 
 export function SideBar() {
   const dispatch = useAppDispatch();
@@ -77,6 +76,9 @@ export function SideBar() {
           }}
         />
         <TweetDialog
+          onSubmit={() => {
+            setDialogOpen(false);
+          }}
           isOpen={dialogOpen}
           onClose={() => {
             setDialogOpen(false);

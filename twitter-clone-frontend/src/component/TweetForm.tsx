@@ -23,7 +23,7 @@ export interface TweetFormParams {
   mediaSrc?: string;
   mediaType?: string;
 }
-function TweetForm(props: {disablePoll?: boolean }) {
+function TweetForm(props: { disablePoll?: boolean; onSubmit?: () => void }) {
   const dispatch = useAppDispatch();
 
   const [state, setState] = useState<TweetFormParams>({
@@ -166,9 +166,10 @@ function TweetForm(props: {disablePoll?: boolean }) {
               isPoll: false,
               hasMedia: false,
             });
-            
+
             dispatch(updateFeedLoading(true));
             dispatch(getUserFeed());
+            if(props.onSubmit) props.onSubmit();
           }}
         />
       </div>

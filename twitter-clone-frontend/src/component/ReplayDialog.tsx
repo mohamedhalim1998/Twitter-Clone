@@ -8,7 +8,7 @@ import TweetForm, { TweetFormParams } from "./TweetForm";
 const ReplayDialog = (props: {
   tweet?: Tweet;
   profile?: Profile;
-  onSubmit: (date: TweetFormParams) => void;
+  onSubmit: () => void;
   onClose: () => void;
   isOpen?: boolean;
 }) => {
