@@ -51,6 +51,7 @@ export const EditProfileDialog = ({
             className="bg-gray-900 text-white my-auto text-center p-2  px-4 rounded-3xl  hover:bg-gray-800 cursor-pointer font-semibold ml-auto"
             onClick={() => {
               dispatch(editProfile(state));
+              onClose?.();
             }}
           >
             Save
