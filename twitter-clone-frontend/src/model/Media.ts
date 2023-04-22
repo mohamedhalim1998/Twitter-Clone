@@ -1,4 +1,4 @@
-export default interface MediaDto {
+export default interface Media {
     id: number;
     type: "IMAGE"|"VIDEO";
     url: string;
@@ -8,4 +8,15 @@ export default interface MediaDto {
   }
 
 
+  
+ export function isMedia(obj: any): obj is Media {
+    const keys: (keyof Media)[] = ['id', 'type', 'url', 'duration', 'height', 'width'];
+    for (const key of keys) {
+      if (!(key in obj)) {
+        return false;
+      }
+    }
+    return true;
+  }
+  
   
