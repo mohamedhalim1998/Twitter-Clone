@@ -14,7 +14,11 @@ import { RootState } from "../store/Store";
 import { TweetNavBar } from "../component/TweetNavBar";
 import { useEffect } from "react";
 import { ProfileInfo } from "./ProfileInfo";
-import { FeedState, getUserTweets, updateFeedLoading } from "../store/FeedReducer";
+import {
+  FeedState,
+  getUserTweets,
+  updateFeedLoading,
+} from "../store/FeedReducer";
 
 function ProfilePage() {
   const { username } = useParams();
@@ -63,7 +67,9 @@ function ProfilePage() {
           }
         />
         {TweetNavBar()}
-        <TweetCard tweet={profileState.pinnedTweet} pinned />
+        {profileState.pinnedTweet && (
+          <TweetCard tweet={profileState.pinnedTweet} pinned />
+        )}
         {feed.tweets.map((tweet, i) => {
           return <TweetCard tweet={tweet} key={i} />;
         })}

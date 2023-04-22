@@ -14,18 +14,20 @@ import DropDownMenu from "./DropDownMenu";
 import { Divider } from "./Divider";
 import Tweet from "../model/Tweet";
 import Profile from "../model/Profile";
-import Media from "../model/Media";
+import Media, { isMedia } from "../model/Media";
 import moment from "moment";
 import { useAppDispatch } from "../store/hooks";
 import { likeTweet, replayTweet, reTweet } from "../store/TweetReducer";
 import ReplayDialog from "./ReplayDialog";
 import { TweetFormParams } from "./TweetForm";
+import Poll from "../model/Poll";
+import { min, random } from "lodash";
 
 export const TweetCard = ({
   tweet,
   pinned = false,
 }: {
-  tweet?: Tweet;
+  tweet: Tweet;
   pinned?: boolean;
 }) => {
   const profile =
@@ -35,23 +37,41 @@ export const TweetCard = ({
   return (
     <div>
       {tweet?.tweetRefrence?.refType == "REPLAY" && (
-        <TweetInfo
+        <TweetContent
           tweet={tweet.includes?.tweets[0]}
           profile={tweet.includes?.users[1]}
           showReplayLine
-          media={tweet?.includes?.media[tweet?.includes?.media.length - 1]}
+          attachment={
+            tweet.attachment
+              ? tweet.attachment.type === "MEDIA"
+                ? tweet?.includes?.media[tweet?.includes?.media.length - 1]
+                : tweet?.includes?.polls[tweet?.includes?.polls.length - 1]
+              : undefined
+          }
         />
       )}
-      <TweetInfo
+      <TweetContent
         tweet={tweet}
         profile={profile}
         pinned={pinned}
-        media={tweet?.includes?.media[0]}
+        attachment={
+          tweet.attachment
+            ? tweet.attachment.type === "MEDIA"
+              ? tweet.includes?.media[0]
+              : tweet.includes?.polls[0]
+            : undefined
+        }
       />
     </div>
   );
 };
-const TweetActionBar = ({ tweet, profile }: { tweet?: Tweet, profile?: Profile }) => {
+const TweetActionBar = ({
+  tweet,
+  profile,
+}: {
+  tweet?: Tweet;
+  profile?: Profile;
+}) => {
   const dispatch = useAppDispatch();
   const [showReplayDialog, setShowReplayDialog] = useState<boolean>(false);
   return (
@@ -105,16 +125,16 @@ const TweetActionBar = ({ tweet, profile }: { tweet?: Tweet, profile?: Profile }
   );
 };
 
-export const TweetInfo = ({
+export const TweetContent = ({
   tweet,
-  media,
+  attachment,
   profile,
   pinned,
   showReplayLine,
 }: {
   tweet?: Tweet;
   profile?: Profile;
-  media?: Media;
+  attachment?: Media | Poll;
   pinned?: boolean;
   showReplayLine?: boolean;
 }) => {
@@ -180,19 +200,7 @@ export const TweetInfo = ({
             </div>
           </div>
           <p className="text-base text-gray-700">{tweet?.text}</p>
-          {tweet?.attachment?.type == "MEDIA" &&
-            (tweet.includes?.media[0].type == "IMAGE" ? (
-              <img
-                className="rounded-lg w-full max-h-96 mx-auto object-cover object-center"
-                src={media?.url}
-              />
-            ) : (
-              <video
-                className="object-cover w-auto max-h-96 mx-auto "
-                controls
-                src={media?.url}
-              ></video>
-            ))}
+          {attachment && <TweetAttactment attachment={attachment} />}
 
           <TweetActionBar tweet={tweet} profile={profile} />
         </div>
@@ -200,3 +208,74 @@ export const TweetInfo = ({
     </div>
   );
 };
+
+const TweetAttactment = ({ attachment }: { attachment: Media | Poll }) => {
+  if (isMedia(attachment)) {
+    return <MediaTweet media={attachment} />;
+  } else {
+    return <PollTweet poll={attachment} showRes />;
+  }
+};
+
+const MediaTweet = ({ media }: { media: Media }) => {
+  return media.type == "IMAGE" ? (
+    <img
+      className="rounded-lg w-full max-h-96 mx-auto object-cover object-center"
+      src={media?.url}
+    />
+  ) : (
+    <video
+      className="object-cover w-auto max-h-96 mx-auto "
+      controls
+      src={media?.url}
+    ></video>
+  );
+};
+
+export const PollTweet = ({
+  poll,
+  showRes,
+}: {
+  poll: Poll;
+  showRes?: boolean;
+}) => {
+  return (
+    <div className="flex flex-col gap-2">
+      {poll.options?.map((option, index) =>
+        showRes ? (
+          <ResultPercent option={option} percent={random(1, 100)} />
+        ) : (
+          <div
+            className="bg-gray-50 text-theme text-center p-2  px-4 rounded-3xl  hover:bg-blue-300 cursor-pointer font-semibold border-blue-300 border-2"
+            key={index}
+          >
+            {option}
+          </div>
+        )
+      )}
+    </div>
+  );
+};
+
+function ResultPercent({
+  option,
+  percent,
+}: {
+  option: string;
+  percent: number;
+}) {
+  return (
+    <div className="relative h-8 bg-gray-50">
+      <div
+        className="absolute top-0 left-0 h-full bg-gray-300"
+        style={{
+          width: `${percent}%`,
+        }}
+      ></div>
+      <div className="absolute top-0 right-0 left-0 bottom-0 px-4 flex flex-row justify-between w-full">
+        <span>{option}</span>
+        <span>{percent}%</span>
+      </div>
+    </div>
+  );
+}

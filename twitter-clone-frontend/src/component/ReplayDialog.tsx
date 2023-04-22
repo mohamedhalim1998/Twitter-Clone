@@ -2,7 +2,7 @@ import React from "react";
 import Profile from "../model/Profile";
 import Tweet from "../model/Tweet";
 import { XMarkIcon } from "./Icons";
-import { TweetInfo as TweetDetails } from "./TweetCard";
+import { TweetContent as TweetDetails } from "./TweetCard";
 import TweetForm, { TweetFormParams } from "./TweetForm";
 
 const ReplayDialog = (props: {
