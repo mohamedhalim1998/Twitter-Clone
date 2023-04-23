@@ -55,28 +55,20 @@ function ProfilePage() {
     return <div>loading</div>;
   }
   return (
-    <div className="w-2/3 mx-auto grid grid-cols-11">
-      <div className="col-span-2 z-10">
-        <SideBar />
-      </div>
-      <div className="flex flex-col col-span-6 border-x border-gray-100 gap-3 ">
-        <ProfileInfo
-          profile={profile!}
-          isUserProfile={
-            username != undefined && username == profileState.profile?.username
-          }
-        />
-        {TweetNavBar()}
-        {profileState.pinnedTweet && (
-          <TweetCard tweet={profileState.pinnedTweet} pinned />
-        )}
-        {feed.tweets.map((tweet, i) => {
-          return <TweetCard tweet={tweet} key={i} />;
-        })}
-      </div>
-      <div className="col-span-3">
-        <RightBar />
-      </div>
+    <div className="flex flex-col col-span-6 border-x border-gray-100 gap-3 ">
+      <ProfileInfo
+        profile={profile!}
+        isUserProfile={
+          username != undefined && username == profileState.profile?.username
+        }
+      />
+      {TweetNavBar()}
+      {profileState.pinnedTweet && (
+        <TweetCard tweet={profileState.pinnedTweet} pinned />
+      )}
+      {feed.tweets.map((tweet, i) => {
+        return <TweetCard tweet={tweet} key={i} />;
+      })}
     </div>
   );
 }

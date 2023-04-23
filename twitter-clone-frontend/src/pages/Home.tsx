@@ -23,22 +23,13 @@ function Home() {
   }, []);
 
   return (
-    <div className="w-7/10 mx-auto grid grid-cols-11">
-      <div className="col-span-2">
-        <SideBar />
-      </div>
-      <div className="flex flex-col col-span-6 border-x border-gray-100 gap-3 ">
-        <h1 className="text-2xl font-bold text-gray-800">Home</h1>
-        <Divider />
-        <TweetForm
-        />
-        {feed.tweets.map((tweet, i) => {
-          return <TweetCard tweet={tweet} key={i} />;
-        })}
-      </div>
-      <div className="col-span-3">
-        <RightBar />
-      </div>
+    <div className="flex flex-col col-span-6 border-x border-gray-100 gap-3 ">
+      <h1 className="text-2xl font-bold text-gray-800">Home</h1>
+      <Divider />
+      <TweetForm />
+      {feed.tweets.map((tweet, i) => {
+        return <TweetCard tweet={tweet} key={i} />;
+      })}
     </div>
   );
 }
