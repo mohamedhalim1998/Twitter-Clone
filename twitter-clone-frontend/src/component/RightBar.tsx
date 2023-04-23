@@ -1,31 +1,19 @@
 import React from "react";
 import { number } from "yup";
 import { FollowButton } from "./FollowButton";
-import { MoreIconWithoutCircle, SearchIcon } from "./Icons";
+import { MoreIconWithoutCircle } from "./Icons";
 import ProfilePanal from "./ProfilePanal";
+import { SearchBar } from "./SearchBar";
 
 function RightBar() {
   return (
     <div className="flex flex-col my-5 w-full gap-3">
-      <SearchBar />
+      <SearchBar label="Search Twitter" />
       <WhatHappening />
       <WhoToFollow />
     </div>
   );
 }
-const SearchBar = () => {
-  return (
-    <div className="flex flex-row rounded-3xl bg-gray-100 w-full py-1 border h-fit">
-      <SearchIcon />
-      <input
-        type="text"
-        placeholder="Search Twitter"
-        className="border-none focus:outline-none text-base w-full bg-gray-100"
-      />
-    </div>
-  );
-};
-
 const WhatHappening = () => {
   return (
     <div className="flex flex-col bg-gray-100 gap-5 p-3 rounded-sm">
